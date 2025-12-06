@@ -78,6 +78,7 @@ rusty-lake-orrery-game/
 │       ├── ART_WORKFLOW.md      # 美术工作流程
 │       ├── ANIMATION_WORKFLOW.md # 动画工作流程
 │       ├── TECH_WORKFLOW.md     # 技术规划流程
+│       ├── LEVEL_DESIGN_WORKFLOW.md # 关卡设计流程
 │       └── INTEGRATION_WORKFLOW.md # 集成指导流程
 └── Config/                      # 配置文件
     └── DefaultEngine.ini        # 引擎配置
@@ -95,6 +96,7 @@ rusty-lake-orrery-game/
 | **美术对话** | 视觉资源制作 | 使用NanoBananaPro生成UI、环境、道具等美术资源 |
 | **动画对话** | 角色动画制作 | 使用Sola生成角色动画视频并转换为游戏动画 |
 | **技术规划对话** | 技术架构设计 | 分析交互功能、规划C++模块和蓝图结构 |
+| **关卡设计对话** | 关卡与解谜设计 | 设计谜题逻辑链、场景布局、填充数据表、编写交互细节 |
 | **集成指导对话** | 项目整合与完成 | 整合所有模块、指导最终项目完成 |
 
 ---
@@ -113,6 +115,7 @@ rusty-lake-orrery-game/
 - [美术工作流程](Docs/WORKFLOW/ART_WORKFLOW.md) - 美术资源制作指南
 - [动画工作流程](Docs/WORKFLOW/ANIMATION_WORKFLOW.md) - 角色动画制作指南
 - [技术规划流程](Docs/WORKFLOW/TECH_WORKFLOW.md) - 技术架构规划指南
+- [关卡设计流程](Docs/WORKFLOW/LEVEL_DESIGN_WORKFLOW.md) - 关卡与解谜设计指南
 - [集成指导流程](Docs/WORKFLOW/INTEGRATION_WORKFLOW.md) - 项目整合指南
 
 ---
