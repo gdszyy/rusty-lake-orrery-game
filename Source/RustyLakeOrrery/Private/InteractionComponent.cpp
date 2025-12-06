@@ -1,319 +1,214 @@
 // InteractionComponent.cpp
 
 #include "InteractionComponent.h"
+#include "InteractableComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
-#include "Kismet/GameplayStatics.h"
-
-// ============================================================================
-// 构造函数和生命周期
-// ============================================================================
 
 UInteractionComponent::UInteractionComponent()
 {
-    // 设置此组件每帧调用TickComponent()
     PrimaryComponentTick.bCanEverTick = true;
-
-    // 设置默认值
-    InteractionDistance = 5000.0f;
-    InteractionTraceChannel = ECC_Visibility;
-    bDrawDebugTrace = false;
-    TraceMode = EInteractionTraceMode::ScreenCenter;
 }
 
 void UInteractionComponent::BeginPlay()
 {
     Super::BeginPlay();
 
-    // 缓存PlayerController引用
+    // 缓存PlayerController
     CachedPlayerController = Cast<APlayerController>(GetOwner());
     
     if (!CachedPlayerController)
     {
-        // TODO: 添加错误日志,此组件必须附加在PlayerController上
-        UE_LOG(LogTemp, Error, TEXT("UInteractionComponent: Component must be attached to a PlayerController!"));
+        UE_LOG(LogTemp, Error, TEXT("InteractionComponent: Must be attached to a PlayerController!"));
+        return;
     }
+
+    // 绑定输入
+    BindInputActions();
 }
 
 void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    // 每帧更新交互检测
-    UpdateInteraction();
+    // 每帧执行交互检测
+    PerformInteractionTrace();
+}
+
+FText UInteractionComponent::GetCurrentPrompt() const
+{
+    if (CurrentInteractableComponent && CurrentInteractableComponent->CanInteract())
+    {
+        return CurrentInteractableComponent->GetPrompt();
+    }
+    
+    return FText::GetEmpty();
 }
 
 // ============================================================================
-// 交互函数
+// 内部实现函数（完全封装的黑盒逻辑）
 // ============================================================================
 
-void UInteractionComponent::UpdateInteraction()
+void UInteractionComponent::PerformInteractionTrace()
 {
-    // TODO: 实现射线检测逻辑
-    // 1. 调用PerformTrace()执行射线检测
-    // 2. 检查命中的Actor是否实现IInteractable接口
-    // 3. 调用UpdateFocusedActor()更新聚焦状态
-    
     if (!CachedPlayerController)
     {
         return;
     }
 
-    FHitResult HitResult;
-    AActor* NewFocusedActor = nullptr;
+    // 获取屏幕中心位置（2D游戏通常使用屏幕中心或鼠标位置）
+    int32 ViewportSizeX, ViewportSizeY;
+    CachedPlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
 
-    if (PerformTrace(HitResult))
+    // 使用鼠标位置进行射线检测（2D点击游戏的标准做法）
+    float MouseX, MouseY;
+    CachedPlayerController->GetMousePosition(MouseX, MouseY);
+
+    // 将屏幕坐标转换为世界射线
+    FVector WorldLocation, WorldDirection;
+    bool bSuccess = CachedPlayerController->DeprojectScreenPositionToWorld(
+        MouseX,
+        MouseY,
+        WorldLocation,
+        WorldDirection
+    );
+
+    if (!bSuccess)
+    {
+        return;
+    }
+
+    // 计算射线终点
+    FVector TraceEnd = WorldLocation + (WorldDirection * InteractionDistance);
+
+    // 执行射线检测
+    FHitResult HitResult;
+    FCollisionQueryParams QueryParams;
+    QueryParams.AddIgnoredActor(CachedPlayerController->GetPawn());
+
+    bool bHit = GetWorld()->LineTraceSingleByChannel(
+        HitResult,
+        WorldLocation,
+        TraceEnd,
+        TraceChannel,
+        QueryParams
+    );
+
+    // 调试可视化
+    if (bShowDebugTrace)
+    {
+        FColor TraceColor = bHit ? FColor::Green : FColor::Red;
+        DrawDebugLine(GetWorld(), WorldLocation, TraceEnd, TraceColor, false, 0.0f, 0, 1.0f);
+        
+        if (bHit)
+        {
+            DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 12, FColor::Green, false, 0.0f);
+        }
+    }
+
+    // 更新聚焦状态
+    AActor* NewFocusedActor = nullptr;
+    
+    if (bHit)
     {
         AActor* HitActor = HitResult.GetActor();
-        if (HitActor && IsActorInteractable(HitActor))
+        if (HitActor)
         {
-            // 检查对象是否可以被交互
-            if (IInteractable::Execute_CanInteract(HitActor))
+            // 检查是否有InteractableComponent
+            UInteractableComponent* InteractableComp = HitActor->FindComponentByClass<UInteractableComponent>();
+            if (InteractableComp && InteractableComp->CanInteract())
             {
                 NewFocusedActor = HitActor;
             }
         }
     }
 
-    // 更新聚焦状态
     UpdateFocusedActor(NewFocusedActor);
 }
 
-void UInteractionComponent::Interact()
+void UInteractionComponent::HandleInteractionInput()
 {
-    // TODO: 实现交互逻辑
-    // 1. 检查是否有聚焦的对象
-    // 2. 检查对象是否可以被交互
-    // 3. 调用对象的OnInteract()函数
-    // 4. 广播OnInteracted事件
-    
-    if (!FocusedActor)
+    if (!CurrentInteractableComponent || !CurrentFocusedActor)
     {
         return;
     }
 
-    if (!IsActorInteractable(FocusedActor))
+    if (!CurrentInteractableComponent->CanInteract())
     {
         return;
     }
 
-    if (!IInteractable::Execute_CanInteract(FocusedActor))
-    {
-        return;
-    }
-
-    // 调用交互函数
-    IInteractable::Execute_OnInteract(FocusedActor, CachedPlayerController);
-
-    // 广播交互事件
-    OnInteracted.Broadcast(FocusedActor);
-}
-
-bool UInteractionComponent::UseItemOnFocusedActor(UItemDataAsset* ItemData)
-{
-    // TODO: 实现物品使用逻辑
-    // 1. 检查是否有聚焦的对象和有效的物品数据
-    // 2. 调用对象的OnUseItem()函数
-    // 3. 根据返回值决定是否从背包中移除物品
+    // 执行交互
+    CurrentInteractableComponent->ExecuteInteraction(CachedPlayerController);
     
-    if (!FocusedActor || !ItemData)
-    {
-        return false;
-    }
-
-    if (!IsActorInteractable(FocusedActor))
-    {
-        return false;
-    }
-
-    // 调用物品使用函数
-    bool bItemUsed = IInteractable::Execute_OnUseItem(FocusedActor, ItemData, CachedPlayerController);
-
-    return bItemUsed;
-}
-
-void UInteractionComponent::SetFocusedActor(AActor* NewFocusedActor)
-{
-    // TODO: 实现手动设置聚焦对象的逻辑
-    UpdateFocusedActor(NewFocusedActor);
-}
-
-// ============================================================================
-// 内部辅助函数
-// ============================================================================
-
-bool UInteractionComponent::PerformTrace(FHitResult& OutHitResult)
-{
-    // TODO: 实现射线检测逻辑
-    // 1. 调用GetTraceStartAndDirection()获取射线参数
-    // 2. 计算射线终点
-    // 3. 执行LineTraceSingleByChannel
-    // 4. 如果启用了调试绘制,绘制射线和命中点
-    
-    if (!CachedPlayerController)
-    {
-        return false;
-    }
-
-    FVector StartLocation;
-    FVector Direction;
-
-    if (!GetTraceStartAndDirection(StartLocation, Direction))
-    {
-        return false;
-    }
-
-    // 计算射线终点
-    FVector EndLocation = StartLocation + (Direction * InteractionDistance);
-
-    // 执行射线检测
-    FCollisionQueryParams QueryParams;
-    QueryParams.AddIgnoredActor(CachedPlayerController->GetPawn());
-
-    bool bHit = GetWorld()->LineTraceSingleByChannel(
-        OutHitResult,
-        StartLocation,
-        EndLocation,
-        InteractionTraceChannel,
-        QueryParams
-    );
-
-    // 调试绘制
-    if (bDrawDebugTrace)
-    {
-        FColor TraceColor = bHit ? FColor::Green : FColor::Red;
-        DrawDebugLine(GetWorld(), StartLocation, EndLocation, TraceColor, false, 0.0f, 0, 1.0f);
-        
-        if (bHit)
-        {
-            DrawDebugSphere(GetWorld(), OutHitResult.ImpactPoint, 10.0f, 12, FColor::Green, false, 0.0f);
-        }
-    }
-
-    return bHit;
-}
-
-bool UInteractionComponent::IsActorInteractable(AActor* Actor) const
-{
-    // TODO: 实现接口检查逻辑
-    // 检查Actor是否实现了IInteractable接口
-    
-    if (!Actor)
-    {
-        return false;
-    }
-
-    return Actor->GetClass()->ImplementsInterface(UInteractable::StaticClass());
+    UE_LOG(LogTemp, Log, TEXT("InteractionComponent: Interaction executed on %s"), *CurrentFocusedActor->GetName());
 }
 
 void UInteractionComponent::UpdateFocusedActor(AActor* NewFocusedActor)
 {
-    // TODO: 实现聚焦状态更新逻辑
-    // 1. 检查聚焦对象是否发生改变
-    // 2. 如果改变,调用旧对象的OnEndFocus()
-    // 3. 调用新对象的OnBeginFocus()
-    // 4. 更新FocusedActor变量
-    // 5. 广播OnFocusChanged事件
-    
-    if (FocusedActor == NewFocusedActor)
+    if (CurrentFocusedActor == NewFocusedActor)
     {
-        // 聚焦对象未改变,无需更新
+        // 聚焦未改变
         return;
     }
 
-    AActor* OldFocusedActor = FocusedActor;
-
-    // 调用旧对象的OnEndFocus
-    if (OldFocusedActor && IsActorInteractable(OldFocusedActor))
+    // 结束旧对象的聚焦
+    if (CurrentInteractableComponent)
     {
-        IInteractable::Execute_OnEndFocus(OldFocusedActor);
+        CurrentInteractableComponent->EndFocus();
     }
 
     // 更新聚焦对象
-    FocusedActor = NewFocusedActor;
+    CurrentFocusedActor = NewFocusedActor;
+    CurrentInteractableComponent = nullptr;
 
-    // 调用新对象的OnBeginFocus
-    if (FocusedActor && IsActorInteractable(FocusedActor))
+    // 开始新对象的聚焦
+    if (CurrentFocusedActor)
     {
-        IInteractable::Execute_OnBeginFocus(FocusedActor);
+        CurrentInteractableComponent = CurrentFocusedActor->FindComponentByClass<UInteractableComponent>();
+        if (CurrentInteractableComponent)
+        {
+            CurrentInteractableComponent->BeginFocus();
+            UE_LOG(LogTemp, Verbose, TEXT("InteractionComponent: Focused on %s"), *CurrentFocusedActor->GetName());
+        }
     }
-
-    // 广播聚焦改变事件
-    OnFocusChanged.Broadcast(FocusedActor, OldFocusedActor);
 }
 
-bool UInteractionComponent::GetTraceStartAndDirection(FVector& OutStartLocation, FVector& OutDirection) const
+void UInteractionComponent::BindInputActions()
 {
-    // TODO: 实现射线起点和方向计算逻辑
-    // 根据TraceMode的不同,使用不同的方法获取射线参数
-    // - ScreenCenter: 使用DeprojectScreenPositionToWorld,传入屏幕中心坐标
-    // - MouseCursor: 使用GetMousePosition和DeprojectScreenPositionToWorld
-    // - TouchLocation: 使用GetInputTouchState和DeprojectScreenPositionToWorld
+    if (bInputBound || !CachedPlayerController)
+    {
+        return;
+    }
+
+    // 绑定鼠标左键点击到交互函数
+    // 注意：这里使用InputComponent绑定，需要在PlayerController的SetupInputComponent中配置
+    // 或者使用增强输入系统（Enhanced Input System）
     
-    if (!CachedPlayerController)
+    // TODO: 根据项目的输入系统进行绑定
+    // 方案1：传统输入系统
+    // CachedPlayerController->InputComponent->BindAction("Interact", IE_Pressed, this, &UInteractionComponent::HandleInteractionInput);
+    
+    // 方案2：在PlayerController的蓝图中手动绑定
+    // 在BP_PlayerController的事件图表中：
+    // Event Left Mouse Button -> Call HandleInteractionInput on InteractionComponent
+    
+    // 临时方案：使用鼠标左键的原始绑定
+    if (CachedPlayerController->InputComponent)
     {
-        return false;
+        CachedPlayerController->InputComponent->BindAction(
+            "Interact",
+            IE_Pressed,
+            this,
+            &UInteractionComponent::HandleInteractionInput
+        );
+        
+        bInputBound = true;
+        UE_LOG(LogTemp, Log, TEXT("InteractionComponent: Input binding successful"));
     }
-
-    int32 ViewportSizeX, ViewportSizeY;
-    CachedPlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
-
-    float ScreenX = 0.0f;
-    float ScreenY = 0.0f;
-
-    switch (TraceMode)
+    else
     {
-        case EInteractionTraceMode::ScreenCenter:
-        {
-            // 使用屏幕中心
-            ScreenX = ViewportSizeX * 0.5f;
-            ScreenY = ViewportSizeY * 0.5f;
-            break;
-        }
-        case EInteractionTraceMode::MouseCursor:
-        {
-            // 使用鼠标位置
-            CachedPlayerController->GetMousePosition(ScreenX, ScreenY);
-            break;
-        }
-        case EInteractionTraceMode::TouchLocation:
-        {
-            // 使用触摸位置
-            float TouchX, TouchY;
-            bool bIsTouching = false;
-            CachedPlayerController->GetInputTouchState(ETouchIndex::Touch1, TouchX, TouchY, bIsTouching);
-            
-            if (bIsTouching)
-            {
-                ScreenX = TouchX;
-                ScreenY = TouchY;
-            }
-            else
-            {
-                // 如果没有触摸输入,使用屏幕中心
-                ScreenX = ViewportSizeX * 0.5f;
-                ScreenY = ViewportSizeY * 0.5f;
-            }
-            break;
-        }
+        UE_LOG(LogTemp, Warning, TEXT("InteractionComponent: InputComponent not available, input binding failed"));
     }
-
-    // 将屏幕坐标转换为世界坐标
-    FVector WorldLocation;
-    FVector WorldDirection;
-    bool bSuccess = CachedPlayerController->DeprojectScreenPositionToWorld(
-        ScreenX,
-        ScreenY,
-        WorldLocation,
-        WorldDirection
-    );
-
-    if (bSuccess)
-    {
-        OutStartLocation = WorldLocation;
-        OutDirection = WorldDirection;
-    }
-
-    return bSuccess;
 }
