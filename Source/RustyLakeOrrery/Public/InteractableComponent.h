@@ -183,11 +183,13 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Observe Config", meta = (MultiLine = true, EditCondition = "InteractionType == EInteractionType::Observe", EditConditionHides))
     FText ObserveText;
 
-    /** 观察时播放的对话数据资产（可选，优先于ObserveText）
-     * TODO: 替换为UDialogueDataAsset（需要先实现DialogueSystem）
-     */
+    /** 观察时播放的对话数据资产（可选，优先于ObserveText） */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Observe Config", meta = (EditCondition = "InteractionType == EInteractionType::Observe", EditConditionHides))
-    UDataAsset* ObserveDialogue = nullptr;
+    class UDialogueDataAsset* ObserveDialogue = nullptr;
+
+    /** 观察时触发的对话事件名称（用于从DateAsset中查找对应对话） */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Observe Config", meta = (EditCondition = "InteractionType == EInteractionType::Observe", EditConditionHides))
+    FName ObserveTriggerEvent;
 
     // ========================================================================
     // 拾取类型配置（InteractionType = Pickup）
@@ -244,11 +246,13 @@ public:
     // 谜题触发配置（InteractionType = TriggerPuzzle）
     // ========================================================================
 
-    /** 要激活的谜题Actor引用
-     * TODO: 替换为APuzzleBase（需要先实现PuzzleSystem）
-     */
+    /** 要激活的谜题Actor引用 */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle Config", meta = (EditCondition = "InteractionType == EInteractionType::TriggerPuzzle", EditConditionHides))
-    AActor* TargetPuzzle = nullptr;
+    class APuzzleBase* TargetPuzzle = nullptr;
+
+    /** 触发时是否显示谜题提示 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle Config", meta = (EditCondition = "InteractionType == EInteractionType::TriggerPuzzle", EditConditionHides))
+    bool bShowPuzzleHint = true;
 
     // ========================================================================
     // 旋转物体配置（InteractionType = RotateObject）
