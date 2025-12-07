@@ -295,10 +295,10 @@ public:
      * 仅在InteractionType设置为Custom时触发，用于极少数需要特殊逻辑的情况
      * @param Interactor 发起交互的Actor（通常是PlayerController）
      */
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractionDelegate, AActor*, Interactor);
+
     UPROPERTY(BlueprintAssignable, Category = "Custom Events")
     FInteractionDelegate OnCustomInteract;
-
-    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractionDelegate, AActor*, Interactor);
 
     // ========================================================================
     // 公共接口函数（由InteractionComponent调用）
