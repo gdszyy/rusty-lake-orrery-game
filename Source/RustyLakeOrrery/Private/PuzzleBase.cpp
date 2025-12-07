@@ -42,7 +42,7 @@ void APuzzleBase::ActivatePuzzle()
 
     // 触发激活事件
     OnPuzzleActivated.Broadcast(this);
-    OnPuzzleActivated_Implementation();
+    OnPuzzleActivatedEvent_Implementation();
 
     UE_LOG(LogTemp, Log, TEXT("PuzzleBase: Puzzle '%s' activated"), *PuzzleName.ToString());
 }
@@ -167,10 +167,10 @@ float APuzzleBase::GetProgress_Implementation() const
     }
 }
 
-void APuzzleBase::OnPuzzleActivated_Implementation()
+void APuzzleBase::OnPuzzleActivatedEvent_Implementation()
 {
     // 默认实现为空,子类可以重写
-    UE_LOG(LogTemp, Log, TEXT("PuzzleBase: OnPuzzleActivated called for '%s'"), *PuzzleName.ToString());
+    UE_LOG(LogTemp, Log, TEXT("PuzzleBase: OnPuzzleActivatedEvent called for '%s'"), *PuzzleName.ToString());
 }
 
 void APuzzleBase::OnPuzzleSolved_Implementation()

@@ -140,9 +140,9 @@ float ARotationPuzzle::GetProgress_Implementation() const
     return FMath::Clamp(Progress, 0.0f, 1.0f);
 }
 
-void ARotationPuzzle::OnPuzzleActivated_Implementation()
+void ARotationPuzzle::OnPuzzleActivatedEvent_Implementation()
 {
-    Super::OnPuzzleActivated_Implementation();
+    Super::OnPuzzleActivatedEvent_Implementation();
 
     // 启用Tick
     SetActorTickEnabled(true);

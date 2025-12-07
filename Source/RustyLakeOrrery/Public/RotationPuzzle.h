@@ -128,7 +128,7 @@ public:
     // ========================================================================
 
     virtual float GetProgress_Implementation() const override;
-    virtual void OnPuzzleActivated_Implementation() override;
+    virtual void OnPuzzleActivatedEvent_Implementation() override;
     virtual void OnPuzzleResetEvent_Implementation() override;
 
 private:

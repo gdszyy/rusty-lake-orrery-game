@@ -222,7 +222,7 @@ public:
      * @brief 激活谜题时调用(蓝图可重写)
      */
     UFUNCTION(BlueprintNativeEvent, Category = "Puzzle")
-    void OnPuzzleActivated();
+    void OnPuzzleActivatedEvent();
 
     /**
      * @brief 谜题完成时调用(蓝图可重写)
