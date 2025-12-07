@@ -1,6 +1,6 @@
-# 美术工作流程指南 (Art Workflow) - V2
+# 美术工作流程指南 (Art Workflow) - V2.1
 
-**文档版本**: 2.0  
+**文档版本**: 2.1  
 **目标角色**: 美术资源设计师  
 **核心工具**: AI 图像生成 (如 Midjourney, Stable Diffusion), Adobe Photoshop  
 **最后更新**: 2025-12-07
@@ -65,7 +65,7 @@
   - `minimal cross-hatching for texture.`
   - `simple and recognizable even at small sizes.`
 
-## 5. 美术资产需求清单 (V2.0)
+## 5. 美术资产需求清单 (V2.1)
 
 以下是根据第一至第三章游戏设计文档（Optimized版）梳理的详细美术资产需求清单。请严格按照此清单进行制作。
 
@@ -73,90 +73,96 @@
 
 **场景：博物馆第一展厅 - 时间的结晶**
 
-#### 场景资产
-
-| 资产编号 | 资产名称 | 描述 | 优先级 |
-|---|---|---|---|
-| BG_Ch1_001 | BG_Museum_Hall1 | 展厅背景全景，包含大理石地板、木质护墙板、古典吊灯等元素 | P0 |
-
-#### 可交互物品与道具
-
-| 资产编号 | 资产名称 | 描述 | 状态/帧数 | 优先级 |
-|---|---|---|---|---|
-| OBJ_Ch1_001 | OBJ_Cartier_Case | 卡地亚展柜 | 2个状态 (开/关) | P0 |
-| OBJ_Ch1_002 | OBJ_Ring / Necklace / Crown | 三件珠宝（戒指、项链、王冠） | 各3帧闪烁动画 | P0 |
-| OBJ_Ch1_003 | OBJ_Sarcophagus | 埃及石棺 | 5帧开合动画 | P0 |
-| OBJ_Ch1_004 | OBJ_Mummy | 木乃伊 | 8帧复活动画 | P1 |
-| OBJ_Ch1_005 | OBJ_Scale | 埃及审判天平 | 5帧平衡动画 | P0 |
-| OBJ_Ch1_006 | OBJ_MusicBox | 音乐盒 | 10帧开盖+旋转动画 | P0 |
-| OBJ_Ch1_007 | OBJ_Crow | 乌鸦 | 8帧 (idle+啄食) | P1 |
-| OBJ_Ch1_008 | OBJ_Poster_Concert | 演唱会海报 | 2个状态 (模糊/清晰) | P1 |
-| ITEM_Ch1_001 | ITEM_Magnifier | 放大镜 | 道具+图标 | P0 |
-| ITEM_Ch1_002 | ITEM_Note_Feather | 音符羽毛 | 道具+图标 | P0 |
-| ITEM_Ch1_003 | ITEM_Truth_Feather | 真理之羽 | 道具+图标 | P0 |
-| ITEM_Ch1_004 | ITEM_Symbol_Past | 过去之符 | 图标 | P0 |
+| 资产编号 | 资产名称 | 描述 | 状态/帧数 | 优先级 | 复用状态 |
+|---|---|---|---|---|---|
+| BG_Ch1_001 | BG_Museum_Hall1 | 展厅背景全景 | P0 | ✅ 已有基底 |
+| OBJ_Ch1_001 | OBJ_Cartier_Case | 卡地亚展柜 | 2个状态 (开/关) | P0 | ⚠️ 仅有关闭状态 |
+| OBJ_Ch1_002 | OBJ_Ring / Necklace / Crown | 三件珠宝 | 各3帧闪烁动画 | P0 | ❌ 待制作 |
+| OBJ_Ch1_003 | OBJ_Sarcophagus | 埃及石棺 | 5帧开合动画 | P0 | ⚠️ 仅有关闭状态 |
+| OBJ_Ch1_004 | OBJ_Mummy | 木乃伊 | 8帧复活动画 | P1 | ❌ 待制作 |
+| OBJ_Ch1_005 | OBJ_Scale | 埃及审判天平 | 5帧平衡动画 | P0 | ✅ 可直接复用 |
+| OBJ_Ch1_006 | OBJ_MusicBox | 音乐盒 | 10帧开盖+旋转动画 | P0 | ⚠️ 仅有关闭状态 |
+| OBJ_Ch1_007 | OBJ_Crow | 乌鸦 | 8帧 (idle+啄食) | P1 | ✅ 可作为基准帧 |
+| OBJ_Ch1_008 | OBJ_Poster_Concert | 演唱会海报 | 2个状态 (模糊/清晰) | P1 | ❌ 待制作 |
+| ITEM_Ch1_001 | ITEM_Magnifier | 放大镜 | 道具+图标 | P0 | ✅ 可直接复用 |
+| ITEM_Ch1_002 | ITEM_Note_Feather | 音符羽毛 | 道具+图标 | P0 | ✅ 可直接复用 |
+| ITEM_Ch1_003 | ITEM_Truth_Feather | 真理之羽 | 道具+图标 | P0 | ✅ 可直接复用 |
+| ITEM_Ch1_004 | ITEM_Symbol_Past | 过去之符 | 图标 | P0 | ✅ 可直接复用 |
 
 ### 5.2 第二章：成长与分离
 
 **场景：博物馆第二展厅 - 生长的悖论**
 
-#### 场景资产
-
-| 资产编号 | 资产名称 | 描述 | 优先级 |
-|---|---|---|---|
-| BG_Ch2_001 | BG_Museum_Hall2 | 展厅背景全景，包含左侧温室区域和右侧镜像区域 | P0 |
-
-#### 可交互物品与道具
-
-| 资产编号 | 资产名称 | 描述 | 状态/帧数 | 优先级 |
-|---|---|---|---|---|
-| OBJ_Ch2_001 | PLANT_Sunflower | 向日葵 | 5帧生长动画 | P0 |
-| OBJ_Ch2_002 | PLANT_WaterLily | 睡莲 | 5帧生长动画 | P0 |
-| OBJ_Ch2_003 | PLANT_MoonFlower | 月见草 | 5帧生长动画 | P0 |
-| OBJ_Ch2_004 | PLANT_Rose | 蔷薇 | 5帧生长动画 | P0 |
-| OBJ_Ch2_005 | OBJ_Clock | 时钟 | 交互（可拖动指针） | P0 |
-| OBJ_Ch2_006 | OBJ_BigMirror | 大镜子 | 5帧破裂动画 | P0 |
-| OBJ_Ch2_007 | CHAR_RedPuppet / BluePuppet | 红/蓝人偶 | 各3帧移动动画 | P0 |
-| OBJ_Ch2_008 | CHAR_Butterfly | 蝴蝶 | 骨骼动画 | P0 |
-| ITEM_Ch2_001 | ITEM_Flower_Red / Blue | 红/蓝花朵 | 图标 | P0 |
-| ITEM_Ch2_002 | ITEM_Symbol_Present | 现在之符 | 图标 | P0 |
+| 资产编号 | 资产名称 | 描述 | 状态/帧数 | 优先级 | 复用状态 |
+|---|---|---|---|---|---|
+| BG_Ch2_001 | BG_Museum_Hall2 | 展厅背景全景 | P0 | ❌ 待制作 |
+| OBJ_Ch2_001 | PLANT_Sunflower | 向日葵 | 5帧生长动画 | P0 | ❌ 待制作 |
+| OBJ_Ch2_002 | PLANT_WaterLily | 睡莲 | 5帧生长动画 | P0 | ❌ 待制作 |
+| OBJ_Ch2_003 | PLANT_MoonFlower | 月见草 | 5帧生长动画 | P0 | ❌ 待制作 |
+| OBJ_Ch2_004 | PLANT_Rose | 蔷薇 | 5帧生长动画 | P0 | ❌ 待制作 |
+| OBJ_Ch2_005 | OBJ_Clock | 时钟 | 交互 | P0 | ❌ 待制作 |
+| OBJ_Ch2_006 | OBJ_BigMirror | 大镜子 | 5帧破裂动画 | P0 | ❌ 待制作 |
+| OBJ_Ch2_007 | CHAR_RedPuppet / BluePuppet | 红/蓝人偶 | 各3帧移动动画 | P0 | ❌ 待制作 |
+| OBJ_Ch2_008 | CHAR_Butterfly | 蝴蝶 | 骨骼动画 | P0 | ❌ 待制作 |
+| ITEM_Ch2_001 | ITEM_Flower_Red / Blue | 红/蓝花朵 | 图标 | P0 | ❌ 待制作 |
+| ITEM_Ch2_002 | ITEM_Symbol_Present | 现在之符 | 图标 | P0 | 🎨 可参考过去之符 |
 
 ### 5.3 第三章：流动的永恒
 
 **场景：博物馆核心大厅 - 时间的交响**
 
-#### 场景资产
+| 资产编号 | 资产名称 | 描述 | 状态/帧数 | 优先级 | 复用状态 |
+|---|---|---|---|---|---|
+| BG_Ch3_001 | BG_Museum_Core_Hall | 核心大厅背景全景 | P0 | ❌ 待制作 |
+| OBJ_Ch3_001 | OBJ_Painting_Future | 未来画作 | 静态+动画 | P0 | ❌ 待制作 |
+| OBJ_Ch3_002 | OBJ_CraneMachine | 娃娃机 | 动画 | P0 | ❌ 待制作 |
+| OBJ_Ch3_003 | OBJ_TicketMachine | 彩票兑换机 | 交互界面 | P1 | ❌ 待制作 |
+| OBJ_Ch3_004 | OBJ_Orrery | 天体仪核心 | 动画 | P0 | ❌ 待制作 |
+| OBJ_Ch3_005 | OBJ_Clock_Main | 天体仪大钟 | 交互 | P0 | ❌ 待制作 |
+| ITEM_Ch3_001 | ITEM_Gear_Copper / Silver / Gold | 铜/银/金齿轮 | 图标 | P0 | ❌ 待制作 |
+| ITEM_Ch3_002 | ITEM_Palette_Eternal | 永恒调色盘 | 图标 | P0 | ❌ 待制作 |
+| ITEM_Ch3_003 | ITEM_Symbol_Future | 未来之符 | 图标 | P0 | 🎨 可参考过去之符 |
+| ITEM_Ch3_004 | ITEM_Symbol_Eternal | 永恒之符 | 图标 | P0 | 🎨 可参考过去之符 |
 
-| 资产编号 | 资产名称 | 描述 | 优先级 |
-|---|---|---|---|
-| BG_Ch3_001 | BG_Museum_Core_Hall | 核心大厅背景全景（宽场景） | P0 |
+*注：详细清单请参考 `Docs/ART_ASSETS_LIST.md`。*
 
-#### 可交互物品与道具
+## 6. 资产复用指南 (Asset Reuse Guide)
 
-| 资产编号 | 资产名称 | 描述 | 状态/帧数 | 优先级 |
-|---|---|---|---|---|
-| OBJ_Ch3_001 | OBJ_Painting_Future | 未来画作 | 静态+动画（流动的星空） | P0 |
-| OBJ_Ch3_002 | OBJ_CraneMachine | 娃娃机 | 动画（爪子抓取） | P0 |
-| OBJ_Ch3_003 | OBJ_TicketMachine | 彩票兑换机 | 交互界面 | P1 |
-| OBJ_Ch3_004 | OBJ_Orrery | 天体仪核心 | 动画（齿轮旋转、刻度点亮） | P0 |
-| OBJ_Ch3_005 | OBJ_Clock_Main | 天体仪大钟 | 交互（可拖动指针） | P0 |
-| ITEM_Ch3_001 | ITEM_Gear_Copper / Silver / Gold | 铜/银/金齿轮 | 图标 | P0 |
-| ITEM_Ch3_002 | ITEM_Palette_Eternal | 永恒调色盘 | 图标 | P0 |
-| ITEM_Ch3_003 | ITEM_Symbol_Future | 未来之符 | 图标 | P0 |
-| ITEM_Ch3_004 | ITEM_Symbol_Eternal | 永恒之符（最终形态） | 图标 | P0 |
+为最大化效率并保证项目风格的绝对一致性，**在创建任何新资产之前，必须优先检查是否已有可复用的资源**。
 
-*注：以上为各章节核心资产节选，详细清单请参考 `art_assets_detailed_list.md`。*
+### 6.1 可复用资产来源
 
-## 6. 工作流程与交付标准
+项目的 `feature/art-ui` 分支已完成第一章部分核心资产的制作，这些资产质量优秀，可直接复用或作为创作新资产的基准。
 
-1.  **领取任务**: 从 `art_assets_detailed_list.md` 中按优先级（P0 > P1 > P2）领取资产制作任务。
-2.  **分析需求**: 仔细阅读设计文档，理解资源将被用于何种场景和交互。
-3.  **生成与创作**: 遵循第3节的“核心生成方法论”，使用AI工具生成基础素材，并结合手动绘制进行精修。
-4.  **格式与命名**: 所有资产需保存为带透明背景的 `.png` 格式。严格按照 `{类型}_{章节}_{逻辑名称}_{状态}.png` (例如 `OBJ_Ch1_MusicBox_Open.png`) 的规范进行命名。
-5.  **提交资源**: 将最终的资源文件放置在 `Content/` 目录下对应的文件夹中（如 `Content/Textures/Chapter1/Objects/`）。
-6.  **发起PR**: 将新创建的资源文件和更新的文档通过Git提交到你的 `feature/art-ui-v2` 分支，并发起Pull Request至 `develop` 分支。
+- **位置**: `feature/art-ui` 分支下的 `Content/Art/Chapter1/` 目录。
+- **状态**: 第一章约50%的核心资产已完成，特别是所有物品栏图标（Icons）均已制作完毕。
 
-## 7. 质量标准 (Quality Standards)
+### 6.2 复用策略
+
+1.  **直接复用 (Direct Reuse)**:
+    - **第一章物品栏图标**: 全部7个图标已完成，可直接用于游戏。
+    - **第一章部分道具**: 如放大镜、天平、乌鸦、日记本等静态道具可直接使用。
+
+2.  **作为基准状态 (Use as Base State)**:
+    - 对于需要多状态的道具，已有的资产可作为“状态1”或“基准帧”。
+    - **示例**: 使用已有的 `Prop_Ch1_MusicBox_Closed.png` 作为参考图，生成其“打开”状态，确保尺寸、光照、风格完全一致。
+
+3.  **作为风格参考 (Use as Style Reference)**:
+    - 所有在 `feature/art-ui` 分支中的资产都应被视为后续所有章节资产创作的“黄金标准”。
+    - 在为第二、三章创作新资产时，务必参考第一章的资产，以确保色调、质感、光影和轮廓风格的统一。
+    - **示例**: 在创作第二章的“现在之符”时，应使用第一章的 `Icon_Ch1_PastSymbol.png` 作为风格和结构参考。
+
+## 7. 工作流程与交付标准
+
+1.  **检查与复用**: 在领取任务前，首先对照第6节的“资产复用指南”，确认该资产是否已有可复用的版本或基准。
+2.  **领取任务**: 从 `Docs/ART_ASSETS_LIST.md` 中按优先级（P0 > P1 > P2）领取资产制作任务。
+3.  **分析需求**: 仔细阅读设计文档，理解资源将被用于何种场景和交互。
+4.  **生成与创作**: 遵循第3节的“核心生成方法论”，使用AI工具生成基础素材，并结合手动绘制进行精修。
+5.  **格式与命名**: 所有资产需保存为带透明背景的 `.png` 格式。严格按照 `{类型}_{章节}_{逻辑名称}_{状态}.png` (例如 `OBJ_Ch1_MusicBox_Open.png`) 的规范进行命名。
+6.  **提交资源**: 将最终的资源文件放置在 `Content/` 目录下对应的文件夹中（如 `Content/Textures/Chapter1/Objects/`）。
+7.  **发起PR**: 将新创建的资源文件和更新的文档通过Git提交到你的 `feature/art-ui-v2` 分支，并发起Pull Request至 `develop` 分支。
+
+## 8. 质量标准 (Quality Standards)
 
 - **一致性**: 所有资源必须在风格、光照、透视上保持高度一致。
 - **清晰度**: 即使是图标，也应保证在不同尺寸下都具有良好的可读性。
