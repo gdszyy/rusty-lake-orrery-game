@@ -32,7 +32,7 @@ void UPuzzleComponent::ActivateComponent()
     }
 
     // 触发激活事件
-    OnComponentActivated.Broadcast(this);
+    OnPuzzleComponentActivated.Broadcast(this);
 
     UE_LOG(LogTemp, Log, TEXT("PuzzleComponent: '%s' activated"), *ComponentID.ToString());
 }

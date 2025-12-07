@@ -66,9 +66,9 @@ public:
     // ========================================================================
 
     /** 组件激活事件 */
-    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnComponentActivated, UPuzzleComponent*, Component);
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPuzzleComponentActivated, UPuzzleComponent*, Component);
     UPROPERTY(BlueprintAssignable, Category = "Puzzle Events")
-    FOnComponentActivated OnComponentActivated;
+    FOnPuzzleComponentActivated OnPuzzleComponentActivated;
 
     /** 组件完成事件 */
     DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnComponentCompleted, UPuzzleComponent*, Component);
