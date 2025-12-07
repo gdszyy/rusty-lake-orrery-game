@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Engine/DataAsset.h"
 #include "InteractableComponent.generated.h"
 
 /**
@@ -181,17 +182,21 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Observe Config", meta = (MultiLine = true, EditCondition = "InteractionType == EInteractionType::Observe", EditConditionHides))
     FText ObserveText;
 
-    /** 观察时播放的对话数据资产（可选，优先于ObserveText） */
+    /** 观察时播放的对话数据资产（可选，优先于ObserveText）
+     * TODO: 替换为UDialogueDataAsset（需要先实现DialogueSystem）
+     */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Observe Config", meta = (EditCondition = "InteractionType == EInteractionType::Observe", EditConditionHides))
-    class UDialogueDataAsset* ObserveDialogue = nullptr;
+    UDataAsset* ObserveDialogue = nullptr;
 
     // ========================================================================
     // 拾取类型配置（InteractionType = Pickup）
     // ========================================================================
 
-    /** 拾取的物品数据资产 */
+    /** 拾取的物品数据资产
+     * TODO: 替换为UItemDataAsset（需要先实现InventorySystem）
+     */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup Config", meta = (EditCondition = "InteractionType == EInteractionType::Pickup", EditConditionHides))
-    class UItemDataAsset* PickupItemData = nullptr;
+    UDataAsset* PickupItemData = nullptr;
 
     /** 拾取后是否销毁此Actor */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup Config", meta = (EditCondition = "InteractionType == EInteractionType::Pickup", EditConditionHides))
@@ -217,9 +222,11 @@ public:
     // 使用物品配置（InteractionType = UseItem）
     // ========================================================================
 
-    /** 需要的物品数据资产 */
+    /** 需要的物品数据资产
+     * TODO: 替换为UItemDataAsset（需要先实现InventorySystem）
+     */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UseItem Config", meta = (EditCondition = "InteractionType == EInteractionType::UseItem", EditConditionHides))
-    class UItemDataAsset* RequiredItemData = nullptr;
+    UDataAsset* RequiredItemData = nullptr;
 
     /** 使用物品后是否从背包移除 */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UseItem Config", meta = (EditCondition = "InteractionType == EInteractionType::UseItem", EditConditionHides))
@@ -233,9 +240,11 @@ public:
     // 谜题触发配置（InteractionType = TriggerPuzzle）
     // ========================================================================
 
-    /** 要激活的谜题Actor引用 */
+    /** 要激活的谜题Actor引用
+     * TODO: 替换为APuzzleBase（需要先实现PuzzleSystem）
+     */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle Config", meta = (EditCondition = "InteractionType == EInteractionType::TriggerPuzzle", EditConditionHides))
-    class APuzzleBase* TargetPuzzle = nullptr;
+    AActor* TargetPuzzle = nullptr;
 
     // ========================================================================
     // 旋转物体配置（InteractionType = RotateObject）
