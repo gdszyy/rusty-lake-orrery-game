@@ -10,14 +10,14 @@
 
 UInteractableComponent::UInteractableComponent()
 {
-    PrimaryComponentTick.bCanEverTick = false;
+    PrimaryComponentTick.bCanEverTick = true;
 }
 
 void UInteractableComponent::BeginPlay()
 {
     Super::BeginPlay();
 
-    // 缓存网格体组件用于高亮效果
+    // 缓存网格体组件用于高亮效果和旋转
     AActor* Owner = GetOwner();
     if (Owner)
     {
@@ -29,6 +29,23 @@ void UInteractableComponent::BeginPlay()
         {
             CachedMeshComponent = Owner->FindComponentByClass<USkeletalMeshComponent>();
         }
+
+        // 保存初始旋转
+        if (CachedMeshComponent)
+        {
+            InitialRotation = CachedMeshComponent->GetRelativeRotation();
+        }
+    }
+}
+
+void UInteractableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+    // 如果正在旋转且是RotateObject类型，检查目标角度
+    if (bIsRotating && InteractionType == EInteractionType::RotateObject)
+    {
+        CheckTargetRotation();
     }
 }
 
@@ -66,11 +83,147 @@ void UInteractableComponent::ExecuteInteraction(AActor* Interactor)
             HandlePuzzleInteraction(Interactor);
             break;
 
+        case EInteractionType::SwipeTrigger:
+            HandleSwipeTriggerInteraction(Interactor);
+            break;
+
+        case EInteractionType::RotateObject:
+            // 旋转类型不通过点击触发，而是通过BeginRotation/UpdateRotation
+            break;
+
         case EInteractionType::Custom:
             // 触发蓝图自定义事件
             OnCustomInteract.Broadcast(Interactor);
             break;
     }
+}
+
+bool UInteractableComponent::HandleSwipe(const FVector2D& SwipeVector, AActor* Interactor)
+{
+    if (!bIsInteractable || !Interactor)
+    {
+        return false;
+    }
+
+    // 检查滑动方向是否有效
+    if (!IsSwipeDirectionValid(SwipeVector))
+    {
+        return false;
+    }
+
+    // 执行交互
+    ExecuteInteraction(Interactor);
+    
+    UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Swipe handled, direction: %s"), 
+        *SwipeVector.ToString());
+    
+    return true;
+}
+
+void UInteractableComponent::BeginRotation()
+{
+    if (!bIsInteractable)
+    {
+        return;
+    }
+
+    bIsRotating = true;
+    bTargetAngleReached = false;
+    
+    UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Rotation started"));
+}
+
+void UInteractableComponent::UpdateRotation(float DeltaRotation)
+{
+    if (!bIsRotating || !CachedMeshComponent)
+    {
+        return;
+    }
+
+    // 应用旋转灵敏度
+    float AdjustedRotation = DeltaRotation * RotationSensitivity;
+
+    // 累计旋转角度
+    CurrentRotationAngle += AdjustedRotation;
+
+    // 如果启用了角度限制，进行夹紧
+    if (bClampRotation)
+    {
+        CurrentRotationAngle = FMath::Clamp(CurrentRotationAngle, MinRotationAngle, MaxRotationAngle);
+    }
+    else
+    {
+        // 归一化到0-360范围
+        while (CurrentRotationAngle >= 360.0f) CurrentRotationAngle -= 360.0f;
+        while (CurrentRotationAngle < 0.0f) CurrentRotationAngle += 360.0f;
+    }
+
+    // 应用旋转到网格体
+    FRotator NewRotation = InitialRotation;
+    FQuat RotationQuat = FQuat(RotationAxis.GetSafeNormal(), FMath::DegreesToRadians(CurrentRotationAngle));
+    NewRotation = (RotationQuat * FQuat(InitialRotation)).Rotator();
+    
+    CachedMeshComponent->SetRelativeRotation(NewRotation);
+
+    UE_LOG(LogTemp, Verbose, TEXT("InteractableComponent: Rotation updated to %.2f degrees"), CurrentRotationAngle);
+}
+
+void UInteractableComponent::EndRotation()
+{
+    if (!bIsRotating)
+    {
+        return;
+    }
+
+    bIsRotating = false;
+    
+    UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Rotation ended at %.2f degrees"), CurrentRotationAngle);
+}
+
+void UInteractableComponent::BeginLongPress()
+{
+    if (!bIsInteractable)
+    {
+        return;
+    }
+
+    bIsLongPressing = true;
+    LongPressTimer = 0.0f;
+    
+    UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Long press started"));
+}
+
+bool UInteractableComponent::UpdateLongPress(float DeltaTime)
+{
+    if (!bIsLongPressing)
+    {
+        return false;
+    }
+
+    LongPressTimer += DeltaTime;
+
+    if (LongPressTimer >= LongPressDuration)
+    {
+        // 长按完成
+        bIsLongPressing = false;
+        UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Long press completed"));
+        return true;
+    }
+
+    return false;
+}
+
+void UInteractableComponent::CancelLongPress()
+{
+    if (!bIsLongPressing)
+    {
+        return;
+    }
+
+    bIsLongPressing = false;
+    LongPressTimer = 0.0f;
+    
+    UE_LOG(LogTemp, Verbose, TEXT("InteractableComponent: Long press cancelled"));
 }
 
 void UInteractableComponent::BeginFocus()
@@ -103,6 +256,12 @@ void UInteractableComponent::EndFocus()
     {
         ApplyHighlight(false);
     }
+
+    // 如果正在长按，取消它
+    if (bIsLongPressing)
+    {
+        CancelLongPress();
+    }
 }
 
 // ============================================================================
@@ -117,12 +276,6 @@ void UInteractableComponent::HandleObserveInteraction(AActor* Interactor)
     if (ObserveDialogue)
     {
         // TODO: 调用DialogueComponent播放对话
-        // UDialogueComponent* DialogueComp = Interactor->FindComponentByClass<UDialogueComponent>();
-        // if (DialogueComp)
-        // {
-        //     DialogueComp->StartDialogue(ObserveDialogue);
-        // }
-        
         UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Playing dialogue asset (TODO: Integrate DialogueSystem)"));
     }
     else if (!ObserveText.IsEmpty())
@@ -141,17 +294,6 @@ void UInteractableComponent::HandlePickupInteraction(AActor* Interactor)
     }
 
     // TODO: 集成InventorySystem
-    // UInventoryComponent* InventoryComp = Interactor->FindComponentByClass<UInventoryComponent>();
-    // if (InventoryComp)
-    // {
-    //     bool bAdded = InventoryComp->AddItem(PickupItemData);
-    //     if (!bAdded)
-    //     {
-    //         // 背包已满
-    //         return;
-    //     }
-    // }
-
     UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Picked up item (TODO: Integrate InventorySystem)"));
 
     // 播放拾取音效
@@ -180,16 +322,7 @@ void UInteractableComponent::HandleNavigateInteraction(AActor* Interactor)
     }
 
     // TODO: 集成CoreGame的关卡加载系统
-    // UGameManager* GameManager = UGameInstance::GetSubsystem<UGameManager>();
-    // if (GameManager)
-    // {
-    //     GameManager->LoadChapter(TargetLevelName);
-    // }
-
     UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Navigating to level: %s (TODO: Integrate CoreGame)"), *TargetLevelName.ToString());
-
-    // 临时实现：直接加载关卡
-    // UGameplayStatics::OpenLevel(GetWorld(), TargetLevelName);
 }
 
 void UInteractableComponent::HandleUseItemInteraction(AActor* Interactor)
@@ -201,23 +334,6 @@ void UInteractableComponent::HandleUseItemInteraction(AActor* Interactor)
     }
 
     // TODO: 集成InventorySystem检查物品
-    // UInventoryComponent* InventoryComp = Interactor->FindComponentByClass<UInventoryComponent>();
-    // if (InventoryComp)
-    // {
-    //     if (!InventoryComp->HasItem(RequiredItemData))
-    //     {
-    //         // 玩家没有所需物品
-    //         UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Player doesn't have required item"));
-    //         return;
-    //     }
-    //
-    //     // 使用物品
-    //     if (bConsumeItem)
-    //     {
-    //         InventoryComp->RemoveItem(RequiredItemData);
-    //     }
-    // }
-
     UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Used item (TODO: Integrate InventorySystem)"));
 
     // 显示成功文本
@@ -240,13 +356,23 @@ void UInteractableComponent::HandlePuzzleInteraction(AActor* Interactor)
     }
 
     // TODO: 调用谜题的激活函数
-    // TargetPuzzle->Activate();
-
     UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Triggered puzzle (TODO: Integrate PuzzleSystem)"));
 }
 
+void UInteractableComponent::HandleSwipeTriggerInteraction(AActor* Interactor)
+{
+    // 显示滑动触发文本
+    if (!OnSwipeText.IsEmpty())
+    {
+        // TODO: 显示UI文本
+        UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Swipe trigger text: %s"), *OnSwipeText.ToString());
+    }
+
+    // 可以在这里触发其他逻辑，如播放动画、触发事件等
+}
+
 // ============================================================================
-// 视觉反馈函数
+// 视觉反馈和辅助函数
 // ============================================================================
 
 void UInteractableComponent::ApplyHighlight(bool bEnable)
@@ -262,15 +388,6 @@ void UInteractableComponent::ApplyHighlight(bool bEnable)
         CachedMeshComponent->SetRenderCustomDepth(true);
         CachedMeshComponent->SetCustomDepthStencilValue(1);
 
-        // TODO: 可以通过后期处理材质读取CustomDepth并应用高亮效果
-        // 或者直接修改材质参数
-        // UMaterialInstanceDynamic* DynMat = CachedMeshComponent->CreateDynamicMaterialInstance(0);
-        // if (DynMat)
-        // {
-        //     DynMat->SetVectorParameterValue(FName("HighlightColor"), HighlightColor);
-        //     DynMat->SetScalarParameterValue(FName("HighlightIntensity"), HighlightIntensity);
-        // }
-
         UE_LOG(LogTemp, Verbose, TEXT("InteractableComponent: Highlight enabled"));
     }
     else
@@ -279,5 +396,92 @@ void UInteractableComponent::ApplyHighlight(bool bEnable)
         CachedMeshComponent->SetRenderCustomDepth(false);
         
         UE_LOG(LogTemp, Verbose, TEXT("InteractableComponent: Highlight disabled"));
+    }
+}
+
+bool UInteractableComponent::IsSwipeDirectionValid(const FVector2D& SwipeVector) const
+{
+    // 检查滑动距离是否足够
+    float SwipeDistance = SwipeVector.Size();
+    if (SwipeDistance < MinSwipeDistance)
+    {
+        return false;
+    }
+
+    // 如果允许任意方向，直接返回true
+    if (RequiredSwipeDirection == ESwipeDirection::Any)
+    {
+        return true;
+    }
+
+    // 计算滑动角度（相对于水平轴）
+    float SwipeAngle = FMath::Atan2(SwipeVector.Y, SwipeVector.X) * 180.0f / PI;
+    
+    // 归一化到0-360范围
+    if (SwipeAngle < 0) SwipeAngle += 360.0f;
+
+    // 定义各方向的目标角度
+    float TargetAngle = 0.0f;
+    switch (RequiredSwipeDirection)
+    {
+        case ESwipeDirection::Right:
+            TargetAngle = 0.0f;
+            break;
+        case ESwipeDirection::Up:
+            TargetAngle = 90.0f;
+            break;
+        case ESwipeDirection::Left:
+            TargetAngle = 180.0f;
+            break;
+        case ESwipeDirection::Down:
+            TargetAngle = 270.0f;
+            break;
+        default:
+            return true;
+    }
+
+    // 计算角度差
+    float AngleDiff = FMath::Abs(SwipeAngle - TargetAngle);
+    
+    // 处理跨越0度的情况（例如350度和10度之间的差值）
+    if (AngleDiff > 180.0f)
+    {
+        AngleDiff = 360.0f - AngleDiff;
+    }
+
+    // 检查是否在容差范围内
+    bool bIsValid = AngleDiff <= SwipeAngleTolerance;
+
+    UE_LOG(LogTemp, Verbose, TEXT("InteractableComponent: Swipe angle: %.2f, Target: %.2f, Diff: %.2f, Valid: %s"),
+        SwipeAngle, TargetAngle, AngleDiff, bIsValid ? TEXT("Yes") : TEXT("No"));
+
+    return bIsValid;
+}
+
+void UInteractableComponent::CheckTargetRotation()
+{
+    // 如果没有设置目标角度，或已经触发过，则不检查
+    if (TargetRotationAngle < 0.0f || bTargetAngleReached)
+    {
+        return;
+    }
+
+    // 计算当前角度与目标角度的差值
+    float AngleDiff = FMath::Abs(CurrentRotationAngle - TargetRotationAngle);
+    
+    // 处理跨越0度的情况
+    if (AngleDiff > 180.0f)
+    {
+        AngleDiff = 360.0f - AngleDiff;
+    }
+
+    // 检查是否在容差范围内
+    if (AngleDiff <= AngleTolerance)
+    {
+        bTargetAngleReached = true;
+        OnTargetRotationReached.Broadcast(CurrentRotationAngle);
+        
+        UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Target rotation reached! Current: %.2f, Target: %.2f"),
+            CurrentRotationAngle, TargetRotationAngle);
     }
 }

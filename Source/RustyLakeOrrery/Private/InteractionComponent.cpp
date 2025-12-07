@@ -32,8 +32,14 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    // 每帧执行交互检测
-    PerformInteractionTrace();
+    // 处理触控输入
+    HandleTouchInput(DeltaTime);
+
+    // 如果没有触摸输入，执行常规的射线检测（用于鼠标输入）
+    if (CurrentTouchState == ETouchState::None)
+    {
+        PerformInteractionTrace();
+    }
 }
 
 FText UInteractionComponent::GetCurrentPrompt() const
@@ -44,6 +50,20 @@ FText UInteractionComponent::GetCurrentPrompt() const
     }
     
     return FText::GetEmpty();
+}
+
+float UInteractionComponent::GetLongPressProgress() const
+{
+    if (!TouchStartInteractableComponent)
+    {
+        return 0.0f;
+    }
+
+    // 获取长按所需时间
+    // TODO: 从InteractableComponent获取LongPressDuration
+    float RequiredDuration = 1.0f; // 默认值
+    
+    return FMath::Clamp(TouchDuration / RequiredDuration, 0.0f, 1.0f);
 }
 
 // ============================================================================
@@ -57,55 +77,12 @@ void UInteractionComponent::PerformInteractionTrace()
         return;
     }
 
-    // 获取屏幕中心位置（2D游戏通常使用屏幕中心或鼠标位置）
-    int32 ViewportSizeX, ViewportSizeY;
-    CachedPlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
-
-    // 使用鼠标位置进行射线检测（2D点击游戏的标准做法）
+    // 获取鼠标位置
     float MouseX, MouseY;
     CachedPlayerController->GetMousePosition(MouseX, MouseY);
 
-    // 将屏幕坐标转换为世界射线
-    FVector WorldLocation, WorldDirection;
-    bool bSuccess = CachedPlayerController->DeprojectScreenPositionToWorld(
-        MouseX,
-        MouseY,
-        WorldLocation,
-        WorldDirection
-    );
-
-    if (!bSuccess)
-    {
-        return;
-    }
-
-    // 计算射线终点
-    FVector TraceEnd = WorldLocation + (WorldDirection * InteractionDistance);
-
-    // 执行射线检测
     FHitResult HitResult;
-    FCollisionQueryParams QueryParams;
-    QueryParams.AddIgnoredActor(CachedPlayerController->GetPawn());
-
-    bool bHit = GetWorld()->LineTraceSingleByChannel(
-        HitResult,
-        WorldLocation,
-        TraceEnd,
-        TraceChannel,
-        QueryParams
-    );
-
-    // 调试可视化
-    if (bShowDebugTrace)
-    {
-        FColor TraceColor = bHit ? FColor::Green : FColor::Red;
-        DrawDebugLine(GetWorld(), WorldLocation, TraceEnd, TraceColor, false, 0.0f, 0, 1.0f);
-        
-        if (bHit)
-        {
-            DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 12, FColor::Green, false, 0.0f);
-        }
-    }
+    bool bHit = TraceFromScreenPosition(FVector2D(MouseX, MouseY), HitResult);
 
     // 更新聚焦状态
     AActor* NewFocusedActor = nullptr;
@@ -127,22 +104,302 @@ void UInteractionComponent::PerformInteractionTrace()
     UpdateFocusedActor(NewFocusedActor);
 }
 
-void UInteractionComponent::HandleInteractionInput()
+void UInteractionComponent::HandleTouchInput(float DeltaTime)
 {
-    if (!CurrentInteractableComponent || !CurrentFocusedActor)
+    if (!CachedPlayerController)
     {
         return;
     }
 
-    if (!CurrentInteractableComponent->CanInteract())
-    {
-        return;
-    }
+    // 获取触摸输入状态
+    float TouchX, TouchY;
+    bool bIsTouching = false;
+    CachedPlayerController->GetInputTouchState(ETouchIndex::Touch1, TouchX, TouchY, bIsTouching);
 
-    // 执行交互
-    CurrentInteractableComponent->ExecuteInteraction(CachedPlayerController);
+    FVector2D CurrentScreenPosition(TouchX, TouchY);
+
+    // 状态机处理触摸事件
+    if (bIsTouching)
+    {
+        if (CurrentTouchState == ETouchState::None)
+        {
+            // 触摸开始
+            OnTouchBegan(CurrentScreenPosition);
+        }
+        else
+        {
+            // 触摸移动
+            OnTouchMoved(CurrentScreenPosition);
+            
+            // 更新触摸持续时间
+            TouchDuration += DeltaTime;
+        }
+    }
+    else
+    {
+        if (CurrentTouchState != ETouchState::None)
+        {
+            // 触摸结束
+            OnTouchEnded(CurrentScreenPosition);
+        }
+    }
+}
+
+void UInteractionComponent::OnTouchBegan(const FVector2D& TouchLocation)
+{
+    CurrentTouchState = ETouchState::Began;
+    TouchStartPosition = TouchLocation;
+    CurrentTouchPosition = TouchLocation;
+    LastTouchPosition = TouchLocation;
+    TouchStartTime = GetWorld()->GetTimeSeconds();
+    TouchDuration = 0.0f;
+    TouchTotalMovement = 0.0f;
+    bIsRotating = false;
+
+    // 执行射线检测，记录触摸开始时的聚焦对象
+    FHitResult HitResult;
+    if (TraceFromScreenPosition(TouchLocation, HitResult))
+    {
+        AActor* HitActor = HitResult.GetActor();
+        if (HitActor)
+        {
+            UInteractableComponent* InteractableComp = HitActor->FindComponentByClass<UInteractableComponent>();
+            if (InteractableComp && InteractableComp->CanInteract())
+            {
+                TouchStartFocusedActor = HitActor;
+                TouchStartInteractableComponent = InteractableComp;
+                
+                // 更新聚焦状态
+                UpdateFocusedActor(HitActor);
+                
+                // 如果是长按模式，开始长按计时
+                if (InteractableComp->InteractionMode == EInteractionMode::LongPress)
+                {
+                    InteractableComp->BeginLongPress();
+                }
+                
+                if (bShowGestureDebug)
+                {
+                    UE_LOG(LogTemp, Log, TEXT("InteractionComponent: Touch began on %s"), *HitActor->GetName());
+                }
+            }
+        }
+    }
+}
+
+void UInteractionComponent::OnTouchMoved(const FVector2D& TouchLocation)
+{
+    CurrentTouchState = ETouchState::Moved;
     
-    UE_LOG(LogTemp, Log, TEXT("InteractionComponent: Interaction executed on %s"), *CurrentFocusedActor->GetName());
+    // 计算移动距离
+    FVector2D Movement = TouchLocation - LastTouchPosition;
+    float MovementDistance = Movement.Size();
+    TouchTotalMovement += MovementDistance;
+    
+    CurrentTouchPosition = TouchLocation;
+
+    if (!TouchStartInteractableComponent)
+    {
+        LastTouchPosition = TouchLocation;
+        return;
+    }
+
+    // 根据交互模式处理移动
+    switch (TouchStartInteractableComponent->InteractionMode)
+    {
+        case EInteractionMode::Tap:
+            // 点击模式：如果移动距离超过阈值，取消点击
+            if (TouchTotalMovement > TapMaxMovement)
+            {
+                TouchStartInteractableComponent = nullptr;
+            }
+            break;
+
+        case EInteractionMode::Swipe:
+            // 滑动模式：不需要特殊处理，在触摸结束时识别
+            break;
+
+        case EInteractionMode::Rotate:
+            // 旋转模式：持续更新旋转
+            if (!bIsRotating && TouchTotalMovement > TapMaxMovement)
+            {
+                // 开始旋转
+                bIsRotating = true;
+                TouchStartInteractableComponent->BeginRotation();
+            }
+            
+            if (bIsRotating)
+            {
+                // 计算旋转增量（基于水平移动）
+                float DeltaRotation = Movement.X * RotationSensitivity;
+                TouchStartInteractableComponent->UpdateRotation(DeltaRotation);
+            }
+            break;
+
+        case EInteractionMode::LongPress:
+            // 长按模式：更新长按进度
+            if (TouchStartInteractableComponent->UpdateLongPress(GetWorld()->GetDeltaSeconds()))
+            {
+                // 长按完成，执行交互
+                TouchStartInteractableComponent->ExecuteInteraction(CachedPlayerController);
+                TouchStartInteractableComponent = nullptr;
+            }
+            break;
+    }
+
+    LastTouchPosition = TouchLocation;
+}
+
+void UInteractionComponent::OnTouchEnded(const FVector2D& TouchLocation)
+{
+    if (bShowGestureDebug)
+    {
+        UE_LOG(LogTemp, Log, TEXT("InteractionComponent: Touch ended, Duration: %.2f, Movement: %.2f"), 
+            TouchDuration, TouchTotalMovement);
+    }
+
+    // 识别手势并执行相应交互
+    RecognizeGesture();
+
+    // 重置状态
+    CurrentTouchState = ETouchState::None;
+    TouchStartFocusedActor = nullptr;
+    
+    if (TouchStartInteractableComponent)
+    {
+        // 如果正在旋转，结束旋转
+        if (bIsRotating)
+        {
+            TouchStartInteractableComponent->EndRotation();
+        }
+        
+        // 如果正在长按，取消长按
+        TouchStartInteractableComponent->CancelLongPress();
+        
+        TouchStartInteractableComponent = nullptr;
+    }
+    
+    bIsRotating = false;
+}
+
+void UInteractionComponent::RecognizeGesture()
+{
+    if (!TouchStartInteractableComponent)
+    {
+        return;
+    }
+
+    EInteractionMode Mode = TouchStartInteractableComponent->InteractionMode;
+
+    switch (Mode)
+    {
+        case EInteractionMode::Tap:
+            // 检查是否是有效的点击
+            if (TouchTotalMovement <= TapMaxMovement && TouchDuration <= TapMaxDuration)
+            {
+                ExecuteTapInteraction();
+            }
+            break;
+
+        case EInteractionMode::Swipe:
+            // 检查是否是有效的滑动
+            ExecuteSwipeInteraction();
+            break;
+
+        case EInteractionMode::Rotate:
+            // 旋转在OnTouchMoved中持续处理，这里不需要额外操作
+            break;
+
+        case EInteractionMode::LongPress:
+            // 长按在OnTouchMoved中处理，这里不需要额外操作
+            break;
+    }
+}
+
+void UInteractionComponent::ExecuteTapInteraction()
+{
+    if (!TouchStartInteractableComponent)
+    {
+        return;
+    }
+
+    TouchStartInteractableComponent->ExecuteInteraction(CachedPlayerController);
+    
+    if (bShowGestureDebug)
+    {
+        UE_LOG(LogTemp, Log, TEXT("InteractionComponent: Tap interaction executed"));
+    }
+}
+
+void UInteractionComponent::ExecuteSwipeInteraction()
+{
+    if (!TouchStartInteractableComponent)
+    {
+        return;
+    }
+
+    // 计算滑动向量
+    FVector2D SwipeVector = CurrentTouchPosition - TouchStartPosition;
+    
+    // 尝试处理滑动
+    bool bSwipeHandled = TouchStartInteractableComponent->HandleSwipe(SwipeVector, CachedPlayerController);
+    
+    if (bShowGestureDebug)
+    {
+        UE_LOG(LogTemp, Log, TEXT("InteractionComponent: Swipe interaction, Vector: %s, Handled: %s"),
+            *SwipeVector.ToString(), bSwipeHandled ? TEXT("Yes") : TEXT("No"));
+    }
+}
+
+bool UInteractionComponent::TraceFromScreenPosition(const FVector2D& ScreenPosition, FHitResult& OutHitResult)
+{
+    if (!CachedPlayerController)
+    {
+        return false;
+    }
+
+    // 将屏幕坐标转换为世界射线
+    FVector WorldLocation, WorldDirection;
+    bool bSuccess = CachedPlayerController->DeprojectScreenPositionToWorld(
+        ScreenPosition.X,
+        ScreenPosition.Y,
+        WorldLocation,
+        WorldDirection
+    );
+
+    if (!bSuccess)
+    {
+        return false;
+    }
+
+    // 计算射线终点
+    FVector TraceEnd = WorldLocation + (WorldDirection * InteractionDistance);
+
+    // 执行射线检测
+    FCollisionQueryParams QueryParams;
+    QueryParams.AddIgnoredActor(CachedPlayerController->GetPawn());
+
+    bool bHit = GetWorld()->LineTraceSingleByChannel(
+        OutHitResult,
+        WorldLocation,
+        TraceEnd,
+        TraceChannel,
+        QueryParams
+    );
+
+    // 调试可视化
+    if (bShowDebugTrace)
+    {
+        FColor TraceColor = bHit ? FColor::Green : FColor::Red;
+        DrawDebugLine(GetWorld(), WorldLocation, TraceEnd, TraceColor, false, 0.0f, 0, 1.0f);
+        
+        if (bHit)
+        {
+            DrawDebugSphere(GetWorld(), OutHitResult.ImpactPoint, 10.0f, 12, FColor::Green, false, 0.0f);
+        }
+    }
+
+    return bHit;
 }
 
 void UInteractionComponent::UpdateFocusedActor(AActor* NewFocusedActor)
@@ -170,7 +427,11 @@ void UInteractionComponent::UpdateFocusedActor(AActor* NewFocusedActor)
         if (CurrentInteractableComponent)
         {
             CurrentInteractableComponent->BeginFocus();
-            UE_LOG(LogTemp, Verbose, TEXT("InteractionComponent: Focused on %s"), *CurrentFocusedActor->GetName());
+            
+            if (bShowGestureDebug)
+            {
+                UE_LOG(LogTemp, Verbose, TEXT("InteractionComponent: Focused on %s"), *CurrentFocusedActor->GetName());
+            }
         }
     }
 }
@@ -182,33 +443,12 @@ void UInteractionComponent::BindInputActions()
         return;
     }
 
-    // 绑定鼠标左键点击到交互函数
-    // 注意：这里使用InputComponent绑定，需要在PlayerController的SetupInputComponent中配置
-    // 或者使用增强输入系统（Enhanced Input System）
+    // 对于触控游戏，主要依赖触摸输入，不需要绑定额外的输入动作
+    // 触摸输入通过GetInputTouchState在Tick中自动处理
     
-    // TODO: 根据项目的输入系统进行绑定
-    // 方案1：传统输入系统
-    // CachedPlayerController->InputComponent->BindAction("Interact", IE_Pressed, this, &UInteractionComponent::HandleInteractionInput);
+    // 如果需要支持鼠标点击（PC测试），可以在这里绑定
+    // TODO: 根据项目需求决定是否绑定鼠标输入
     
-    // 方案2：在PlayerController的蓝图中手动绑定
-    // 在BP_PlayerController的事件图表中：
-    // Event Left Mouse Button -> Call HandleInteractionInput on InteractionComponent
-    
-    // 临时方案：使用鼠标左键的原始绑定
-    if (CachedPlayerController->InputComponent)
-    {
-        CachedPlayerController->InputComponent->BindAction(
-            "Interact",
-            IE_Pressed,
-            this,
-            &UInteractionComponent::HandleInteractionInput
-        );
-        
-        bInputBound = true;
-        UE_LOG(LogTemp, Log, TEXT("InteractionComponent: Input binding successful"));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("InteractionComponent: InputComponent not available, input binding failed"));
-    }
+    bInputBound = true;
+    UE_LOG(LogTemp, Log, TEXT("InteractionComponent: Touch input system initialized"));
 }

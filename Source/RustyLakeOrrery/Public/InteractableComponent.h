@@ -7,6 +7,48 @@
 #include "InteractableComponent.generated.h"
 
 /**
+ * @brief 交互模式枚举
+ * 定义对象响应的输入手势类型
+ */
+UENUM(BlueprintType)
+enum class EInteractionMode : uint8
+{
+    /** 点击/触摸：单次点击触发 */
+    Tap UMETA(DisplayName = "Tap"),
+    
+    /** 滑动：需要在对象上滑动特定方向 */
+    Swipe UMETA(DisplayName = "Swipe"),
+    
+    /** 旋转：持续触摸并移动来旋转对象 */
+    Rotate UMETA(DisplayName = "Rotate"),
+    
+    /** 长按：需要按住一段时间 */
+    LongPress UMETA(DisplayName = "Long Press")
+};
+
+/**
+ * @brief 滑动方向枚举
+ */
+UENUM(BlueprintType)
+enum class ESwipeDirection : uint8
+{
+    /** 向上滑动 */
+    Up UMETA(DisplayName = "Up"),
+    
+    /** 向下滑动 */
+    Down UMETA(DisplayName = "Down"),
+    
+    /** 向左滑动 */
+    Left UMETA(DisplayName = "Left"),
+    
+    /** 向右滑动 */
+    Right UMETA(DisplayName = "Right"),
+    
+    /** 任意方向 */
+    Any UMETA(DisplayName = "Any Direction")
+};
+
+/**
  * @brief 交互类型枚举
  * 定义所有内置的交互行为类型，C++内部自动处理对应逻辑
  */
@@ -28,24 +70,32 @@ enum class EInteractionType : uint8
     /** 触发谜题：激活关联的谜题Actor */
     TriggerPuzzle UMETA(DisplayName = "Trigger Puzzle"),
     
+    /** 旋转物体：持续旋转对象（如钟表指针、齿轮） */
+    RotateObject UMETA(DisplayName = "Rotate Object"),
+    
+    /** 滑动触发：通过滑动手势触发事件 */
+    SwipeTrigger UMETA(DisplayName = "Swipe Trigger"),
+    
     /** 自定义：触发蓝图事件（仅在需要特殊逻辑时使用） */
     Custom UMETA(DisplayName = "Custom (Blueprint Event)")
 };
 
 /**
- * @brief 高度集成的可交互组件（黑盒设计）
+ * @brief 高度集成的可交互组件（黑盒设计 + 触控手势支持）
  * 
  * 这是一个"开箱即用"的组件，将所有常见交互逻辑封装在C++内部。
+ * 支持Android触控手势（点击、滑动、旋转、长按）。
+ * 
  * 蓝图开发者只需：
  * 1. 将此组件添加到任何Actor
- * 2. 在细节面板中配置交互类型和相关参数
+ * 2. 在细节面板中配置交互模式和交互类型
  * 3. 完成！无需编写任何蓝图代码
  * 
  * 设计原则：
  * - 配置驱动：通过枚举和数据资产配置行为
  * - 零代码使用：常见交互无需蓝图编程
  * - 高度集成：所有逻辑在C++内部自动完成
- * - 最小暴露：只暴露必要的配置参数
+ * - 触控优先：原生支持Android触控手势
  */
 UCLASS(ClassGroup=(Interaction), meta=(BlueprintSpawnableComponent))
 class RUSTYLAKEORRERY_API UInteractableComponent : public UActorComponent
@@ -56,10 +106,14 @@ public:
     UInteractableComponent();
 
     // ========================================================================
-    // 核心配置参数（唯一需要在蓝图中设置的内容）
+    // 核心配置参数
     // ========================================================================
 
-    /** 交互类型：决定点击后的行为 */
+    /** 交互模式：决定需要什么样的输入手势 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Config")
+    EInteractionMode InteractionMode = EInteractionMode::Tap;
+
+    /** 交互类型：决定交互后的行为 */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Config")
     EInteractionType InteractionType = EInteractionType::Observe;
 
@@ -70,6 +124,54 @@ public:
     /** 交互提示文本（显示在UI上） */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction Config")
     FText InteractionPrompt = FText::FromString(TEXT("Interact"));
+
+    // ========================================================================
+    // 滑动手势配置（InteractionMode = Swipe）
+    // ========================================================================
+
+    /** 需要的滑动方向 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Swipe Config", meta = (EditCondition = "InteractionMode == EInteractionMode::Swipe", EditConditionHides))
+    ESwipeDirection RequiredSwipeDirection = ESwipeDirection::Any;
+
+    /** 滑动方向的角度容差（度数，0-90） */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Swipe Config", meta = (EditCondition = "InteractionMode == EInteractionMode::Swipe", EditConditionHides, ClampMin = "0.0", ClampMax = "90.0"))
+    float SwipeAngleTolerance = 30.0f;
+
+    /** 最小滑动距离（像素，低于此距离不算有效滑动） */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Swipe Config", meta = (EditCondition = "InteractionMode == EInteractionMode::Swipe", EditConditionHides, ClampMin = "10.0"))
+    float MinSwipeDistance = 50.0f;
+
+    // ========================================================================
+    // 旋转手势配置（InteractionMode = Rotate）
+    // ========================================================================
+
+    /** 旋转灵敏度（值越大旋转越快） */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotate Config", meta = (EditCondition = "InteractionMode == EInteractionMode::Rotate", EditConditionHides, ClampMin = "0.1", ClampMax = "10.0"))
+    float RotationSensitivity = 1.0f;
+
+    /** 旋转轴（Local Space） */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotate Config", meta = (EditCondition = "InteractionMode == EInteractionMode::Rotate", EditConditionHides))
+    FVector RotationAxis = FVector(0, 0, 1);
+
+    /** 是否限制旋转角度范围 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotate Config", meta = (EditCondition = "InteractionMode == EInteractionMode::Rotate", EditConditionHides))
+    bool bClampRotation = false;
+
+    /** 最小旋转角度（度数） */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotate Config", meta = (EditCondition = "InteractionMode == EInteractionMode::Rotate && bClampRotation", EditConditionHides))
+    float MinRotationAngle = 0.0f;
+
+    /** 最大旋转角度（度数） */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotate Config", meta = (EditCondition = "InteractionMode == EInteractionMode::Rotate && bClampRotation", EditConditionHides))
+    float MaxRotationAngle = 360.0f;
+
+    // ========================================================================
+    // 长按手势配置（InteractionMode = LongPress）
+    // ========================================================================
+
+    /** 长按所需时间（秒） */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "LongPress Config", meta = (EditCondition = "InteractionMode == EInteractionMode::LongPress", EditConditionHides, ClampMin = "0.1"))
+    float LongPressDuration = 1.0f;
 
     // ========================================================================
     // 观察类型配置（InteractionType = Observe）
@@ -136,6 +238,32 @@ public:
     class APuzzleBase* TargetPuzzle = nullptr;
 
     // ========================================================================
+    // 旋转物体配置（InteractionType = RotateObject）
+    // ========================================================================
+
+    /** 旋转到目标角度后触发的事件 */
+    UPROPERTY(BlueprintAssignable, Category = "Rotate Events", meta = (EditCondition = "InteractionType == EInteractionType::RotateObject", EditConditionHides))
+    FRotationReachedDelegate OnTargetRotationReached;
+
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRotationReachedDelegate, float, CurrentAngle);
+
+    /** 目标旋转角度（达到此角度时触发事件，-1表示不检测） */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotate Object Config", meta = (EditCondition = "InteractionType == EInteractionType::RotateObject", EditConditionHides))
+    float TargetRotationAngle = -1.0f;
+
+    /** 目标角度的容差范围（度数） */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotate Object Config", meta = (EditCondition = "InteractionType == EInteractionType::RotateObject && TargetRotationAngle >= 0", EditConditionHides, ClampMin = "0.1"))
+    float AngleTolerance = 5.0f;
+
+    // ========================================================================
+    // 滑动触发配置（InteractionType = SwipeTrigger）
+    // ========================================================================
+
+    /** 滑动触发后显示的文本 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Swipe Trigger Config", meta = (MultiLine = true, EditCondition = "InteractionType == EInteractionType::SwipeTrigger", EditConditionHides))
+    FText OnSwipeText;
+
+    // ========================================================================
     // 视觉反馈配置
     // ========================================================================
 
@@ -166,14 +294,55 @@ public:
     DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractionDelegate, AActor*, Interactor);
 
     // ========================================================================
-    // 内部函数（蓝图无需调用）
+    // 公共接口函数（由InteractionComponent调用）
     // ========================================================================
 
     /**
-     * @brief 执行交互（由InteractionComponent自动调用）
+     * @brief 执行点击/触摸交互（由InteractionComponent自动调用）
      * @param Interactor 发起交互的Actor
      */
     void ExecuteInteraction(AActor* Interactor);
+
+    /**
+     * @brief 处理滑动手势（由InteractionComponent自动调用）
+     * @param SwipeVector 滑动向量（屏幕空间）
+     * @param Interactor 发起交互的Actor
+     * @return 如果滑动被成功处理返回true
+     */
+    bool HandleSwipe(const FVector2D& SwipeVector, AActor* Interactor);
+
+    /**
+     * @brief 开始旋转交互（由InteractionComponent自动调用）
+     */
+    void BeginRotation();
+
+    /**
+     * @brief 更新旋转（由InteractionComponent每帧调用）
+     * @param DeltaRotation 旋转增量（度数）
+     */
+    void UpdateRotation(float DeltaRotation);
+
+    /**
+     * @brief 结束旋转交互（由InteractionComponent自动调用）
+     */
+    void EndRotation();
+
+    /**
+     * @brief 开始长按计时（由InteractionComponent自动调用）
+     */
+    void BeginLongPress();
+
+    /**
+     * @brief 更新长按计时（由InteractionComponent每帧调用）
+     * @param DeltaTime 时间增量
+     * @return 如果长按完成返回true
+     */
+    bool UpdateLongPress(float DeltaTime);
+
+    /**
+     * @brief 取消长按（由InteractionComponent自动调用）
+     */
+    void CancelLongPress();
 
     /**
      * @brief 开始聚焦（由InteractionComponent自动调用）
@@ -199,8 +368,16 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Interaction")
     FText GetPrompt() const { return InteractionPrompt; }
 
+    /**
+     * @brief 获取当前旋转角度（仅用于RotateObject类型）
+     * @return 当前旋转角度
+     */
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Interaction")
+    float GetCurrentRotationAngle() const { return CurrentRotationAngle; }
+
 protected:
     virtual void BeginPlay() override;
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
     // ========================================================================
@@ -222,13 +399,40 @@ private:
     /** 处理谜题触发交互 */
     void HandlePuzzleInteraction(AActor* Interactor);
 
+    /** 处理滑动触发交互 */
+    void HandleSwipeTriggerInteraction(AActor* Interactor);
+
     /** 应用高亮效果 */
     void ApplyHighlight(bool bEnable);
 
-    /** 缓存的网格体组件（用于高亮） */
+    /** 检查滑动方向是否匹配 */
+    bool IsSwipeDirectionValid(const FVector2D& SwipeVector) const;
+
+    /** 检查是否达到目标旋转角度 */
+    void CheckTargetRotation();
+
+    /** 缓存的网格体组件（用于高亮和旋转） */
     UPROPERTY()
     class UMeshComponent* CachedMeshComponent = nullptr;
 
     /** 是否当前处于聚焦状态 */
     bool bIsFocused = false;
+
+    /** 是否正在旋转 */
+    bool bIsRotating = false;
+
+    /** 当前旋转角度（累计） */
+    float CurrentRotationAngle = 0.0f;
+
+    /** 初始旋转（用于恢复） */
+    FRotator InitialRotation;
+
+    /** 长按计时器 */
+    float LongPressTimer = 0.0f;
+
+    /** 是否正在长按 */
+    bool bIsLongPressing = false;
+
+    /** 是否已触发目标角度事件 */
+    bool bTargetAngleReached = false;
 };
