@@ -1,0 +1,35 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "4.27",
+	"Category": "",
+	"Description": "Rusty Lake: The Alchemist's Orrery - A 2D point-and-click puzzle adventure game for Android",
+	"Modules": [
+		{
+			"Name": "RustyLakeOrrery",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"CoreUObject"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "AndroidPermission",
+			"Enabled": true
+		},
+		{
+			"Name": "AndroidDeviceProfileSelector",
+			"Enabled": true
+		},
+		{
+			"Name": "GooglePAD",
+			"Enabled": true
+		}
+	],
+	"TargetPlatforms": [
+		"Android",
+		"WindowsNoEditor"
+	]
+}
