@@ -247,11 +247,12 @@ public:
     // 旋转物体配置（InteractionType = RotateObject）
     // ========================================================================
 
+    /** 声明旋转到达目标角度的委托类型 */
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRotationReachedDelegate, float, CurrentAngle);
+
     /** 旋转到目标角度后触发的事件 */
     UPROPERTY(BlueprintAssignable, Category = "Rotate Events", meta = (EditCondition = "InteractionType == EInteractionType::RotateObject", EditConditionHides))
     FRotationReachedDelegate OnTargetRotationReached;
-
-    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRotationReachedDelegate, float, CurrentAngle);
 
     /** 目标旋转角度（达到此角度时触发事件，-1表示不检测） */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotate Object Config", meta = (EditCondition = "InteractionType == EInteractionType::RotateObject", EditConditionHides))
