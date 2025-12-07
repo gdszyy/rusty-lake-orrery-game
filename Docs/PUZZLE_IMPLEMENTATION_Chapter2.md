@@ -156,7 +156,7 @@ void OnPlantBloomed(EPlantType PlantType)
             break;
         case EPlantType::Rose:
             IsRoseBloomed = true;
-            TriggerAnjiMemory();
+            PlayDialogue("DLG_C2_009");
             break;
     }
     
@@ -1586,106 +1586,6 @@ void Fuse()
 
 ---
 
-### 4. BP_AnjiMemory（安吉回忆过场）
-
-**功能**: 分屏显示安吉分离与重逢
-
-#### 组件结构
-
-```
-BP_AnjiMemory
-├── WidgetComponent (MemoryUI)
-├── AudioComponent (MemoryMusic)
-└── CameraComponent (MemoryCamera)
-```
-
-#### 核心函数
-
-**Play()**
-```cpp
-void Play()
-{
-    // 淡出当前场景
-    FadeOut();
-    
-    // 1秒后显示回忆
-    FTimerHandle TimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, 
-        &AAnjiMemory::ShowMemory, 1.0f, false);
-}
-```
-
-**ShowMemory()**
-```cpp
-void ShowMemory()
-{
-    // 显示分屏UI
-    MemoryUI->SetVisibility(true);
-    
-    // 播放回忆音乐
-    MemoryMusic->Play();
-    
-    // 播放独白序列
-    PlayDialogueSequence();
-    
-    // 20秒后结束
-    FTimerHandle TimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, 
-        &AAnjiMemory::End, 20.0f, false);
-}
-```
-
-**PlayDialogueSequence()**
-```cpp
-void PlayDialogueSequence()
-{
-    // 使用Timeline控制对话时机
-    FTimeline DialogueTimeline;
-    
-    // 0秒: 分离
-    DialogueTimeline.AddEvent(0.0f, FOnTimelineEvent::CreateUObject(this, &AAnjiMemory::PlayDialogue, "DLG_C2_025"));
-    
-    // 10秒: 孤独
-    DialogueTimeline.AddEvent(10.0f, FOnTimelineEvent::CreateUObject(this, &AAnjiMemory::PlayDialogue, "DLG_C2_026"));
-    
-    // 15秒: 重逢
-    DialogueTimeline.AddEvent(15.0f, FOnTimelineEvent::CreateUObject(this, &AAnjiMemory::PlayDialogue, "DLG_C2_027"));
-    
-    DialogueTimeline.Play();
-}
-```
-
-**End()**
-```cpp
-void End()
-{
-    // 淡出回忆
-    FadeOut();
-    
-    // 1秒后回到展厅
-    FTimerHandle TimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, 
-        &AAnjiMemory::ReturnToHall, 1.0f, false);
-}
-```
-
-**ReturnToHall()**
-```cpp
-void ReturnToHall()
-{
-    // 隐藏UI
-    MemoryUI->SetVisibility(false);
-    
-    // 淡入展厅
-    FadeIn();
-    
-    // 蔷薇已盛开
-    // （由管理器的OnReturnToGreenhouse处理）
-}
-```
-
----
-
 ## 🎨 UI系统
 
 ### 1. WBP_DiaryUI（日记UI）
@@ -1864,18 +1764,10 @@ void OptimizeMirror()
 - [ ] 现在之符生成正常
 - [ ] 符号进入背包
 
-#### 回忆过场
-- [ ] 安吉回忆正常触发
-- [ ] 分屏显示正常
-- [ ] 对话时机正确
-- [ ] 回忆结束后返回展厅
-- [ ] 蔷薇已盛开
-
 ### 音频测试
 
 - [ ] 所有音效正确播放
 - [ ] 背景音乐循环正常
-- [ ] 安吉回忆音乐正确触发
 - [ ] 音效音量平衡合理
 - [ ] 独白语音清晰（如有）
 - [ ] 音效不重叠或冲突
@@ -1917,7 +1809,6 @@ void OptimizeMirror()
 - [ ] 所有独白正确触发
 - [ ] 对话文本无错别字
 - [ ] 情感节奏合理
-- [ ] 安吉回忆与主线呼应
 - [ ] 主题表达清晰
 - [ ] 玩家能理解蔷薇的秘密
 

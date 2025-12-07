@@ -23,9 +23,7 @@ DLG_C2_021,ButterflyVisit4,Narrator,安吉的分离...,The separation in Anji...
 DLG_C2_022,TimeWebFormed,Narrator,从相识，到珠宝展，到埃及展，再到安吉。每一个瞬间，都是我们的故事。时间流逝，但这些记忆，永远连接着我们。,From meeting to the jewelry exhibition to the Egyptian exhibition to Anji. Every moment is our story. Time passes but these memories forever connect us.,/Game/Audio/Dialogue/C2/DLG_C2_022.wav,10,,
 DLG_C2_023,SymbolFusion,Narrator,第二个符号...现在的花朵。两朵花，独立但交织。红色是你，蓝色是我。我们不是一体，而是两个独立的生命。但我们的根，紧紧缠绕。这就是我们，此刻的我们。,The second symbol... the flower of the present. Two flowers independent but intertwined. Red is you blue is me. We are not one but two independent lives. But our roots are tightly entwined. This is us us at this moment.,/Game/Audio/Dialogue/C2/DLG_C2_023.wav,12,,
 DLG_C2_024,ChapterEnd,Narrator,关系像植物，需要培育。阳光、水分、时间、空间——但最重要的是，耐心和理解。我们在成长，一起，也各自。,Relationships are like plants they need nurturing. Sunlight water time space— but most importantly patience and understanding. We are growing together and separately.,/Game/Audio/Dialogue/C2/DLG_C2_024.wav,10,,
-DLG_C2_025,AnjiMemory1,Narrator,那天在安吉，我们分开了一段路。你去了云上草原，我留在百草园。,That day in Anji we walked separate paths. You went to Cloud Grassland I stayed in the Herb Garden.,/Game/Audio/Dialogue/C2/DLG_C2_025.wav,6,,
-DLG_C2_026,AnjiMemory2,Narrator,那一刻，我有点孤独。,At that moment I felt a bit lonely.,/Game/Audio/Dialogue/C2/DLG_C2_026.wav,3,,
-DLG_C2_027,AnjiMemory3,Narrator,但当我们重逢时，我们有那么多话想说。分离，让重逢更加珍贵。,But when we reunited we had so much to say. Separation made reunion more precious.,/Game/Audio/Dialogue/C2/DLG_C2_027.wav,6,,
+
 SFX_C2_001,PlantSeed,SoundEffect,种植音效,Planting sound,/Game/Audio/SFX/C2/Plant_Seed.wav,0.5,,
 SFX_C2_002,SkylightOpen,SoundEffect,天窗打开音效,Skylight opening sound,/Game/Audio/SFX/C2/Skylight_Open.wav,1,,
 SFX_C2_003,Watering,SoundEffect,浇水音效,Watering sound,/Game/Audio/SFX/C2/Watering.wav,1.5,,
