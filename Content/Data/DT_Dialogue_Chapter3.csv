@@ -1,0 +1,47 @@
+RowName,DialogueID,SpeakerName,SpeakerNameEN,DialogueTextCN,DialogueTextEN,TriggerCondition,DialogueType,AudioPath,Duration
+1,CH3_Opening,主角,Protagonist,"这里是天体仪的核心...时间的机械心脏。在这里,我将找到最终的答案。","This is the core of the orrery... the mechanical heart of time. Here, I will find the final answer.",OnChapterStart,Monologue,/Game/Audio/VO/CH3_Opening,6.0
+2,CH3_Orrery_Observe,主角,Protagonist,"天体仪...时间的机械心脏。但它停止了跳动,似乎缺少了驱动它的核心齿轮。","The orrery... the mechanical heart of time. But it has stopped beating, seems to be missing the core gears that drive it.",OnClickOrrery,Observation,/Game/Audio/VO/CH3_Orrery_Observe,6.5
+3,CH3_ClawMachine_Discover,主角,Protagonist,"一台娃娃机...里面有三个扭蛋。等等,那些扭蛋里装的是...齿轮?","A claw machine... with three capsules inside. Wait, those capsules contain... gears?",OnObserveClawMachine,Observation,/Game/Audio/VO/CH3_ClawMachine_Discover,5.0
+4,CH3_FirstAttempt_Fail,主角,Protagonist,"这台机器...好像一个人没法完美控制。爪子总是不听话。","This machine... seems like one person can't control it perfectly. The claw never obeys.",OnFirstAttemptFail,Monologue,/Game/Audio/VO/CH3_FirstAttempt_Fail,5.0
+5,CH3_Diary_Cooperation,炼金术士,Alchemist,"我们一起玩《双人成形》时,我才明白,有些事一个人做不到。不是因为能力不够,而是因为设计之初,就注定需要两个人。就像那台娃娃机,或许...它也在等我们两个人。","When we played It Takes Two together, I understood that some things can't be done alone. Not because of lack of ability, but because from the design, it was meant for two people. Like that claw machine, perhaps... it's also waiting for both of us.",OnReadDiary,Document,/Game/Audio/VO/CH3_Diary_Cooperation,14.0
+6,CH3_ClawSuccess,主角,Protagonist,"成功了!就像我们一起玩游戏时一样,合作才是关键。","Success! Just like when we play games together, cooperation is the key.",OnClawSuccess,Monologue,/Game/Audio/VO/CH3_ClawSuccess,4.5
+7,CH3_Gear_Copper,主角,Protagonist,"过去的记忆,是我们故事的基石。","Memories of the past are the foundation of our story.",OnInstallGearCopper,Monologue,/Game/Audio/VO/CH3_Gear_Copper,3.5
+8,CH3_Gear_Silver,主角,Protagonist,"现在的陪伴,是我们此刻的温暖。","Present companionship is our warmth in this moment.",OnInstallGearSilver,Monologue,/Game/Audio/VO/CH3_Gear_Silver,3.5
+9,CH3_Gear_Gold,主角,Protagonist,"未来的希望,是我们共同的目标。","Hope for the future is our shared goal.",OnInstallGearGold,Monologue,/Game/Audio/VO/CH3_Gear_Gold,3.0
+10,CH3_Time_Flows,主角,Protagonist,"时间...终于再次开始流动了。","Time... has finally begun to flow again.",OnAllGearsInstalled,Monologue,/Game/Audio/VO/CH3_Time_Flows,3.5
+11,CH3_Tickets_Get,主角,Protagonist,"哈,意外的奖励!就像我们每次在游戏厅的收获一样。不知道能兑换些什么?","Ha, an unexpected reward! Just like our haul every time at the arcade. Wonder what we can exchange for?",OnGetTickets,Monologue,/Game/Audio/VO/CH3_Tickets_Get,5.5
+12,CH3_Exchange_Palette,主角,Protagonist,"用我们一起赢来的奖励,换取描绘未来的颜料...再合适不过了。","Using the rewards we won together to exchange for paints to depict the future... couldn't be more fitting.",OnExchangePalette,Monologue,/Game/Audio/VO/CH3_Exchange_Palette,6.0
+13,CH3_Painting1_Observe,主角,Protagonist,"我们曾以为,将爱凝固成珠宝,就能永恒。但那只是沉重的枷锁。","We once thought that solidifying love into jewels would make it eternal. But that was just a heavy shackle.",OnObservePainting1,Observation,/Game/Audio/VO/CH3_Painting1_Observe,6.0
+14,CH3_Painting2_Observe,主角,Protagonist,"我们学会了给彼此空间,让爱自由生长。但我们终将走向何方?","We learned to give each other space, let love grow freely. But where will we ultimately go?",OnObservePainting2,Observation,/Game/Audio/VO/CH3_Painting2_Observe,5.5
+15,CH3_Canvas_Ready,主角,Protagonist,"列宾的画作捕捉了瞬间,但我们的未来不该被任何人定义。它是一张白纸,等待着我们共同落笔。","Repin's paintings captured moments, but our future shouldn't be defined by anyone. It's a blank canvas, waiting for us to paint together.",OnCanvasReady,Monologue,/Game/Audio/VO/CH3_Canvas_Ready,8.0
+16,CH3_Painting_Complete,主角,Protagonist,"这才是我们的未来...不是一幅静止的画,而是一片流动的星空。我们永远在其中共舞。","This is our future... not a static painting, but a flowing starry sky. We dance together in it forever.",OnPaintingComplete,Monologue,/Game/Audio/VO/CH3_Painting_Complete,7.0
+17,CH3_Time_Clue,主角,Protagonist,"1点47分...那个特殊的时刻。是时候,让钟声为我们的未来而鸣了。","1:47... that special moment. It's time to let the bells ring for our future.",OnDiscoverTimeClue,Monologue,/Game/Audio/VO/CH3_Time_Clue,5.5
+18,CH3_FutureSymbol_Get,主角,Protagonist,"描绘未来的画笔...第三个符号,终于集齐了。","The brush that paints the future... the third symbol, finally complete.",OnGetFutureSymbol,Monologue,/Game/Audio/VO/CH3_FutureSymbol_Get,4.5
+19,CH3_TimeSet,主角,Protagonist,"就是这个时刻...我们故事的起点,也是永恒的开端。时间,已准备就绪。","This is the moment... the starting point of our story, and the beginning of eternity. Time is ready.",OnTimeSet,Monologue,/Game/Audio/VO/CH3_TimeSet,6.5
+20,CH3_Symbol_Past,主角,Protagonist,"凝固的过去,化为基石。","The solidified past becomes the foundation.",OnPlaceSymbolPast,Monologue,/Game/Audio/VO/CH3_Symbol_Past,3.0
+21,CH3_Symbol_Present,主角,Protagonist,"成长的现在,连成风景。","The growing present forms the landscape.",OnPlaceSymbolPresent,Monologue,/Game/Audio/VO/CH3_Symbol_Present,3.0
+22,CH3_Symbol_Future,主角,Protagonist,"创造的未来,点亮星空。","The created future lights up the starry sky.",OnPlaceSymbolFuture,Monologue,/Game/Audio/VO/CH3_Symbol_Future,3.5
+23,CH3_Chime_01,主角,Protagonist,"一月,我们相识。","January, we met.",OnChime1,Monologue,/Game/Audio/VO/CH3_Chime_01,2.5
+24,CH3_Chime_02,主角,Protagonist,"二月,第一次牵手。","February, first time holding hands.",OnChime2,Monologue,/Game/Audio/VO/CH3_Chime_02,2.5
+25,CH3_Chime_03,主角,Protagonist,"三月,第一次旅行。","March, first trip together.",OnChime3,Monologue,/Game/Audio/VO/CH3_Chime_03,2.5
+26,CH3_Chime_04,主角,Protagonist,"四月,你说你爱我。","April, you said you love me.",OnChime4,Monologue,/Game/Audio/VO/CH3_Chime_04,2.5
+27,CH3_Chime_05,主角,Protagonist,"五月,我们一起看星星。","May, we watched stars together.",OnChime5,Monologue,/Game/Audio/VO/CH3_Chime_05,2.5
+28,CH3_Chime_06,主角,Protagonist,"六月,那个雨天。","June, that rainy day.",OnChime6,Monologue,/Game/Audio/VO/CH3_Chime_06,2.0
+29,CH3_Chime_07,主角,Protagonist,"七月,小刚的演唱会。","July, Jay's concert.",OnChime7,Monologue,/Game/Audio/VO/CH3_Chime_07,2.5
+30,CH3_Chime_08,主角,Protagonist,"八月,安吉百草园。","August, Anji Herb Garden.",OnChime8,Monologue,/Game/Audio/VO/CH3_Chime_08,2.5
+31,CH3_Chime_09,主角,Protagonist,"九月,北京列宾展。","September, Beijing Repin Exhibition.",OnChime9,Monologue,/Game/Audio/VO/CH3_Chime_09,2.5
+32,CH3_Chime_10,主角,Protagonist,"十月,平凡的每一天。","October, every ordinary day.",OnChime10,Monologue,/Game/Audio/VO/CH3_Chime_10,2.5
+33,CH3_Chime_11,主角,Protagonist,"十一月,一起度过的秋天。","November, autumn spent together.",OnChime11,Monologue,/Game/Audio/VO/CH3_Chime_11,2.5
+34,CH3_Chime_12,主角,Protagonist,"十二月,此刻,一周年。","December, this moment, one year anniversary.",OnChime12,Monologue,/Game/Audio/VO/CH3_Chime_12,3.0
+35,CH3_Final_Monologue,主角,Protagonist,"我终于明白了。永恒不是停止,而是流动。不是囚禁,而是选择。在时间的长河中,我选择与你一起,不断创造新的瞬间。这,就是我们的永恒。","I finally understand. Eternity is not stopping, but flowing. Not imprisonment, but choice. In the river of time, I choose to be with you, constantly creating new moments. This is our eternity.",OnFinalMonologue,Monologue,/Game/Audio/VO/CH3_Final_Monologue,15.0
+36,CH3_OpenBox,系统,System,"现在,打开你面前的盒子。","Now, open the box in front of you.",OnOpenBoxPrompt,Instruction,/Game/Audio/VO/CH3_OpenBox,3.0
+37,CH3_ClawMachine_Sound,系统,System,"(娃娃机运转声)","(Claw machine operating sound)",OnClawMachineOperate,Sound,/Game/Audio/SFX/ClawMachine_Operate,2.0
+38,CH3_Prize_Drop,系统,System,"(掉落声+成功音效)","(Drop sound + success jingle)",OnPrizeDrop,Sound,/Game/Audio/SFX/Prize_Drop,1.5
+39,CH3_Tickets_Pour,系统,System,"(彩票哗啦啦声)","(Tickets pouring sound)",OnTicketsPour,Sound,/Game/Audio/SFX/Tickets_Pour,3.0
+40,CH3_Exchange_Machine,系统,System,"(8-bit兑换音乐)","(8-bit exchange music)",OnExchangeSound,Sound,/Game/Audio/SFX/Exchange_Machine,4.0
+41,CH3_Gear_Install,系统,System,"(咔嚓声)","(Click sound)",OnGearInstall,Sound,/Game/Audio/SFX/Gear_Install,1.0
+42,CH3_Clock_Tick,系统,System,"(滴答...滴答...)","(Tick... tock...)",OnClockStart,Sound,/Game/Audio/SFX/Clock_Tick,2.0
+43,CH3_Bell_Chime,系统,System,"(当——)","(Dong—)",OnBellChime,Sound,/Game/Audio/SFX/Bell_Chime,3.0
+44,CH3_Symbol_Fusion,系统,System,"(和谐共鸣)","(Harmonic resonance)",OnSymbolFusion,Sound,/Game/Audio/SFX/Symbol_Fusion,5.0
+45,CH3_Hint_Cooperation,系统,System,"这台机器似乎需要两个人同时操作...试试双子按钮?","This machine seems to require two people to operate simultaneously... Try the twin button?",OnRequestHint_Cooperation,Hint,,4.0
+46,CH3_Hint_TimeClue,系统,System,"完成的画作上似乎有什么线索...仔细观察画框。","There seems to be a clue on the completed painting... Observe the frame carefully.",OnRequestHint_TimeClue,Hint,,4.0
