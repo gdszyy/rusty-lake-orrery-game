@@ -233,6 +233,13 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UseItem Config", meta = (MultiLine = true, EditCondition = "InteractionType == EInteractionType::UseItem", EditConditionHides))
     FText OnItemUsedText;
 
+    /** 声明物品使用成功的委托类型 */
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemUsedDelegate, UItemDataAsset*, UsedItem);
+
+    /** 物品使用成功后触发的事件 */
+    UPROPERTY(BlueprintAssignable, Category = "UseItem Events", meta = (EditCondition = "InteractionType == EInteractionType::UseItem", EditConditionHides))
+    FItemUsedDelegate OnItemUsedSuccessfully;
+
     // ========================================================================
     // 谜题触发配置（InteractionType = TriggerPuzzle）
     // ========================================================================
