@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Engine/DataAsset.h"
+#include "ItemDataAsset.h"
 #include "InteractableComponent.generated.h"
 
 /**
@@ -192,11 +193,9 @@ public:
     // 拾取类型配置（InteractionType = Pickup）
     // ========================================================================
 
-    /** 拾取的物品数据资产
-     * TODO: 替换为UItemDataAsset（需要先实现InventorySystem）
-     */
+    /** 拾取的物品数据资产 */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup Config", meta = (EditCondition = "InteractionType == EInteractionType::Pickup", EditConditionHides))
-    UDataAsset* PickupItemData = nullptr;
+    UItemDataAsset* PickupItemData = nullptr;
 
     /** 拾取后是否销毁此Actor */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup Config", meta = (EditCondition = "InteractionType == EInteractionType::Pickup", EditConditionHides))
@@ -222,11 +221,9 @@ public:
     // 使用物品配置（InteractionType = UseItem）
     // ========================================================================
 
-    /** 需要的物品数据资产
-     * TODO: 替换为UItemDataAsset（需要先实现InventorySystem）
-     */
+    /** 需要的物品数据资产 */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UseItem Config", meta = (EditCondition = "InteractionType == EInteractionType::UseItem", EditConditionHides))
-    UDataAsset* RequiredItemData = nullptr;
+    UItemDataAsset* RequiredItemData = nullptr;
 
     /** 使用物品后是否从背包移除 */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UseItem Config", meta = (EditCondition = "InteractionType == EInteractionType::UseItem", EditConditionHides))

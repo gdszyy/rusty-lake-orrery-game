@@ -5,8 +5,10 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include "InventoryComponent.h"
 
 UInteractableComponent::UInteractableComponent()
 {
@@ -293,22 +295,49 @@ void UInteractableComponent::HandlePickupInteraction(AActor* Interactor)
         return;
     }
 
-    // TODO: 集成InventorySystem
-    UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Picked up item (TODO: Integrate InventorySystem)"));
-
-    // 播放拾取音效
-    if (PickupSound)
+    // 获取PlayerController的InventoryComponent
+    APlayerController* PC = Cast<APlayerController>(Interactor);
+    if (!PC)
     {
-        UGameplayStatics::PlaySound2D(GetWorld(), PickupSound);
+        PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
     }
-
-    // 销毁Actor
-    if (bDestroyAfterPickup)
+    
+    if (PC)
     {
-        AActor* Owner = GetOwner();
-        if (Owner)
+        UInventoryComponent* Inventory = PC->FindComponentByClass<UInventoryComponent>();
+        if (Inventory)
         {
-            Owner->Destroy();
+            // 添加物品到背包
+            bool bSuccess = Inventory->AddItem(PickupItemData);
+            
+            if (bSuccess)
+            {
+                UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Successfully picked up %s"), *PickupItemData->ItemName.ToString());
+                
+                // 播放拾取音效（InventoryComponent会自动播放，这里不需要重复）
+                // if (PickupSound)
+                // {
+                //     UGameplayStatics::PlaySound2D(GetWorld(), PickupSound);
+                // }
+                
+                // 销毁Actor
+                if (bDestroyAfterPickup)
+                {
+                    AActor* Owner = GetOwner();
+                    if (Owner)
+                    {
+                        Owner->Destroy();
+                    }
+                }
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("InteractableComponent: Failed to add item to inventory (full?)"));
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("InteractableComponent: PlayerController has no InventoryComponent!"));
         }
     }
 }
@@ -333,18 +362,52 @@ void UInteractableComponent::HandleUseItemInteraction(AActor* Interactor)
         return;
     }
 
-    // TODO: 集成InventorySystem检查物品
-    UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Used item (TODO: Integrate InventorySystem)"));
-
-    // 显示成功文本
-    if (!OnItemUsedText.IsEmpty())
+    // 获取PlayerController的InventoryComponent
+    APlayerController* PC = Cast<APlayerController>(Interactor);
+    if (!PC)
     {
-        // TODO: 显示UI文本
-        UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Item used text: %s"), *OnItemUsedText.ToString());
+        PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
     }
-
-    // 使用物品后可以禁用交互
-    bIsInteractable = false;
+    
+    if (PC)
+    {
+        UInventoryComponent* Inventory = PC->FindComponentByClass<UInventoryComponent>();
+        if (Inventory)
+        {
+            // 检查是否拥有所需物品
+            if (Inventory->HasItem(RequiredItemData))
+            {
+                // 如果需要消耗物品，从背包移除
+                if (bConsumeItem)
+                {
+                    Inventory->RemoveItem(RequiredItemData);
+                    UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Consumed item %s"), *RequiredItemData->ItemName.ToString());
+                }
+                
+                // 显示成功文本
+                if (!OnItemUsedText.IsEmpty())
+                {
+                    // TODO: 显示UI文本
+                    UE_LOG(LogTemp, Log, TEXT("InteractableComponent: Item used text: %s"), *OnItemUsedText.ToString());
+                }
+                
+                // 广播成功事件
+                OnItemUsedSuccessfully.Broadcast(RequiredItemData);
+                
+                // 使用物品后可以禁用交互
+                bIsInteractable = false;
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("InteractableComponent: Player doesn't have required item %s"), *RequiredItemData->ItemName.ToString());
+                // TODO: 显示“需要XX物品”的提示
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("InteractableComponent: PlayerController has no InventoryComponent!"));
+        }
+    }
 }
 
 void UInteractableComponent::HandlePuzzleInteraction(AActor* Interactor)
