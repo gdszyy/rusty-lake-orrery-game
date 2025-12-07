@@ -779,14 +779,14 @@ void UpdateTimeOfDay()
 
 ---
 
-### 10. BP_AnjiDiary（安吉日记）
+### 10. BP_GardenNotes（园艺笔记）
 
 **功能**: 可阅读的日记，提供线索
 
 #### 组件结构
 
 ```
-BP_AnjiDiary
+BP_GardenNotes
 ├── StaticMesh (DiaryMesh)
 ├── InteractionBox (BoxCollision)
 └── TextRender (Highlight)
@@ -833,7 +833,7 @@ void HighlightKeywords()
     // 短暂切向镜像区域
     FTimerHandle TimerHandle;
     GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, 
-        &AAnjiDiary::PanCameraToMirror, 2.0f, false);
+        &AGardenNotes::PanCameraToMirror, 2.0f, false);
 }
 ```
 
