@@ -1,9 +1,9 @@
-# 美术工作流程指南 (Art Workflow) - V2.1
+# 美术工作流程指南 (Art Workflow) - V3.0
 
-**文档版本**: 2.1  
+**文档版本**: 3.0  
 **目标角色**: 美术资源设计师  
 **核心工具**: AI 图像生成 (如 Midjourney, Stable Diffusion), Adobe Photoshop  
-**最后更新**: 2025-12-07
+**最后更新**: 2025-12-08
 
 ---
 
@@ -65,66 +65,66 @@
   - `minimal cross-hatching for texture.`
   - `simple and recognizable even at small sizes.`
 
-## 5. 美术资产需求清单 (V2.1)
+## 5. 美术资产验收与清单 (V3.0)
 
-以下是根据第一至第三章游戏设计文档（Optimized版）梳理的详细美术资产需求清单。请严格按照此清单进行制作。
+**验收结论**：`feature/art-ui-v2` 分支内的所有美术资源均已通过验收。资源在艺术风格、技术规格和命名规范上均达到“黄金标准”，可作为后续开发的基石。
+
+以下是根据 `feature/art-ui-v2` 分支内容更新的资产清单。所有标记为“✅ 已完成”的资源均可直接在游戏引擎中使用。
 
 ### 5.1 第一章：珠宝、埃及与音乐
 
 **场景：博物馆第一展厅 - 时间的结晶**
 
-| 资产编号 | 资产名称 | 描述 | 状态/帧数 | 优先级 | 复用状态 |
-|---|---|---|---|---|---|
-| BG_Ch1_001 | BG_Museum_Hall1 | 展厅背景全景 | P0 | ✅ 已有基底 |
-| OBJ_Ch1_001 | OBJ_Cartier_Case | 卡地亚展柜 | 2个状态 (开/关) | P0 | ⚠️ 仅有关闭状态 |
-| OBJ_Ch1_002 | OBJ_Ring / Necklace / Crown | 三件珠宝 | 各3帧闪烁动画 | P0 | ❌ 待制作 |
-| OBJ_Ch1_003 | OBJ_Sarcophagus | 埃及石棺 | 5帧开合动画 | P0 | ⚠️ 仅有关闭状态 |
-| OBJ_Ch1_004 | OBJ_Mummy | 木乃伊 | 8帧复活动画 | P1 | ❌ 待制作 |
-| OBJ_Ch1_005 | OBJ_Scale | 埃及审判天平 | 5帧平衡动画 | P0 | ✅ 可直接复用 |
-| OBJ_Ch1_006 | OBJ_MusicBox | 音乐盒 | 10帧开盖+旋转动画 | P0 | ⚠️ 仅有关闭状态 |
-| OBJ_Ch1_007 | OBJ_Crow | 乌鸦 | 8帧 (idle+啄食) | P1 | ✅ 可作为基准帧 |
-| OBJ_Ch1_008 | OBJ_Poster_Concert | 演唱会海报 | 2个状态 (模糊/清晰) | P1 | ❌ 待制作 |
-| ITEM_Ch1_001 | ITEM_Magnifier | 放大镜 | 道具+图标 | P0 | ✅ 可直接复用 |
-| ITEM_Ch1_002 | ITEM_Note_Feather | 音符羽毛 | 道具+图标 | P0 | ✅ 可直接复用 |
-| ITEM_Ch1_003 | ITEM_Truth_Feather | 真理之羽 | 道具+图标 | P0 | ✅ 可直接复用 |
-| ITEM_Ch1_004 | ITEM_Symbol_Past | 过去之符 | 图标 | P0 | ✅ 可直接复用 |
+| 资产编号 | 资产名称 | 描述 | 状态/帧数 | 验收状态 |
+|---|---|---|---|---|
+| BG_Ch1_001 | BG_Museum_Hall1 | 展厅背景全景 | 4个图层 | ✅ 已完成 |
+| OBJ_Ch1_001 | OBJ_Cartier_Case | 卡地亚展柜 | 2个状态 (开/关) | ✅ 已完成 |
+| OBJ_Ch1_002 | OBJ_Ring / Necklace / Crown | 三件珠宝 | 各3帧闪烁动画 | ✅ 已完成 |
+| OBJ_Ch1_003 | OBJ_Sarcophagus | 埃及石棺 | 2个状态 (开/关) | ✅ 已完成 |
+| OBJ_Ch1_004 | OBJ_Mummy | 木乃伊 | 8帧复活动画 | ✅ 已完成 |
+| OBJ_Ch1_005 | OBJ_Scale | 埃及审判天平 | 静态 | ✅ 已完成 |
+| OBJ_Ch1_006 | OBJ_MusicBox | 音乐盒 | 2个状态 (开/关) | ✅ 已完成 |
+| OBJ_Ch1_007 | OBJ_Crow | 乌鸦 | 静态 | ✅ 已完成 |
+| OBJ_Ch1_008 | OBJ_Poster_Concert | 演唱会海报 | 2个状态 (模糊/清晰) | ✅ 已完成 |
+| ITEM_Ch1_001 | ITEM_Magnifier | 放大镜 | 道具+图标 | ✅ 已完成 |
+| ITEM_Ch1_002 | ITEM_Note_Feather | 音符羽毛 | 道具+图标 | ✅ 已完成 |
+| ITEM_Ch1_003 | ITEM_Truth_Feather | 真理之羽 | 道具+图标 | ✅ 已完成 |
+| ITEM_Ch1_004 | ITEM_Symbol_Past | 过去之符 | 图标 | ✅ 已完成 |
 
 ### 5.2 第二章：成长与分离
 
 **场景：博物馆第二展厅 - 生长的悖论**
 
-| 资产编号 | 资产名称 | 描述 | 状态/帧数 | 优先级 | 复用状态 |
-|---|---|---|---|---|---|
-| BG_Ch2_001 | BG_Museum_Hall2 | 展厅背景全景 | P0 | ❌ 待制作 |
-| OBJ_Ch2_001 | PLANT_Sunflower | 向日葵 | 5帧生长动画 | P0 | ❌ 待制作 |
-| OBJ_Ch2_002 | PLANT_WaterLily | 睡莲 | 5帧生长动画 | P0 | ❌ 待制作 |
-| OBJ_Ch2_003 | PLANT_MoonFlower | 月见草 | 5帧生长动画 | P0 | ❌ 待制作 |
-| OBJ_Ch2_004 | PLANT_Rose | 蔷薇 | 5帧生长动画 | P0 | ❌ 待制作 |
-| OBJ_Ch2_005 | OBJ_Clock | 时钟 | 交互 | P0 | ❌ 待制作 |
-| OBJ_Ch2_006 | OBJ_BigMirror | 大镜子 | 5帧破裂动画 | P0 | ❌ 待制作 |
-| OBJ_Ch2_007 | CHAR_RedPuppet / BluePuppet | 红/蓝人偶 | 各3帧移动动画 | P0 | ❌ 待制作 |
-| OBJ_Ch2_008 | CHAR_Butterfly | 蝴蝶 | 骨骼动画 | P0 | ❌ 待制作 |
-| ITEM_Ch2_001 | ITEM_Flower_Red / Blue | 红/蓝花朵 | 图标 | P0 | ❌ 待制作 |
-| ITEM_Ch2_002 | ITEM_Symbol_Present | 现在之符 | 图标 | P0 | 🎨 可参考过去之符 |
+| 资产编号 | 资产名称 | 描述 | 状态/帧数 | 验收状态 |
+|---|---|---|---|---|
+| BG_Ch2_001 | BG_Museum_Hall2 | 展厅背景全景 | 3个图层 | ✅ 已完成 |
+| OBJ_Ch2_001 | PLANT_Sunflower | 向日葵 | 5帧生长动画 | ✅ 已完成 |
+| OBJ_Ch2_002 | PLANT_WaterLily | 睡莲 | 5帧生长动画 | ✅ 已完成 |
+| OBJ_Ch2_003 | PLANT_MoonFlower | 月见草 | 5帧生长动画 | ✅ 已完成 |
+| OBJ_Ch2_004 | PLANT_Rose | 蔷薇 | 5帧生长动画 | ✅ 已完成 |
+| OBJ_Ch2_005 | OBJ_Clock | 时钟 | 静态 | ✅ 已完成 |
+| OBJ_Ch2_006 | OBJ_BigMirror | 大镜子 | 静态 | ✅ 已完成 |
+| OBJ_Ch2_007 | CHAR_RedPuppet / BluePuppet | 红/蓝人偶 | 静态 | ✅ 已完成 |
+| OBJ_Ch2_008 | CHAR_Butterfly | 蝴蝶 | 静态 | ✅ 已完成 |
+| ITEM_Ch2_001 | ITEM_Flower_Red / Blue | 红/蓝花朵 | 图标 | ✅ 已完成 |
+| ITEM_Ch2_002 | ITEM_Symbol_Present | 现在之符 | 图标 | ✅ 已完成 |
 
 ### 5.3 第三章：流动的永恒
 
 **场景：博物馆核心大厅 - 时间的交响**
 
-| 资产编号 | 资产名称 | 描述 | 状态/帧数 | 优先级 | 复用状态 |
-|---|---|---|---|---|---|
-| BG_Ch3_001 | BG_Museum_Core_Hall | 核心大厅背景全景 | P0 | ❌ 待制作 |
-| OBJ_Ch3_001 | OBJ_Painting_Future | 未来画作 | 静态+动画 | P0 | ❌ 待制作 |
-| OBJ_Ch3_002 | OBJ_CraneMachine | 娃娃机 | 动画 | P0 | ❌ 待制作 |
-| OBJ_Ch3_003 | OBJ_TicketMachine | 彩票兑换机 | 交互界面 | P1 | ❌ 待制作 |
-| OBJ_Ch3_004 | OBJ_Orrery | 天体仪核心 | 动画 | P0 | ❌ 待制作 |
-| OBJ_Ch3_005 | OBJ_Clock_Main | 天体仪大钟 | 交互 | P0 | ❌ 待制作 |
-| ITEM_Ch3_001 | ITEM_Gear_Copper / Silver / Gold | 铜/银/金齿轮 | 图标 | P0 | ❌ 待制作 |
-| ITEM_Ch3_002 | ITEM_Palette_Eternal | 永恒调色盘 | 图标 | P0 | ❌ 待制作 |
-| ITEM_Ch3_003 | ITEM_Symbol_Future | 未来之符 | 图标 | P0 | 🎨 可参考过去之符 |
-| ITEM_Ch3_004 | ITEM_Symbol_Eternal | 永恒之符 | 图标 | P0 | 🎨 可参考过去之符 |
-
-*注：详细清单请参考 `Docs/ART_ASSETS_LIST.md`。*
+| 资产编号 | 资产名称 | 描述 | 状态/帧数 | 验收状态 |
+|---|---|---|---|---|
+| BG_Ch3_001 | BG_Museum_Core_Hall | 核心大厅背景全景 | 3个图层 | ✅ 已完成 |
+| OBJ_Ch3_001 | OBJ_Painting_Future | 未来画作 | 2个状态 (空白/星空) | ✅ 已完成 |
+| OBJ_Ch3_002 | OBJ_CraneMachine | 娃娃机 | 静态 | ✅ 已完成 |
+| OBJ_Ch3_003 | OBJ_TicketMachine | 彩票兑换机 | 静态 | ✅ 已完成 |
+| OBJ_Ch3_004 | OBJ_Orrery | 天体仪核心 | 静态 | ✅ 已完成 |
+| OBJ_Ch3_005 | OBJ_Clock_Main | 天体仪大钟 | 静态 | ✅ 已完成 |
+| ITEM_Ch3_001 | ITEM_Gear_Copper / Silver / Gold | 铜/银/金齿轮 | 道具+图标 | ✅ 已完成 |
+| ITEM_Ch3_002 | ITEM_Palette_Eternal | 永恒调色盘 | 道具+图标 | ✅ 已完成 |
+| ITEM_Ch3_003 | ITEM_Symbol_Future | 未来之符 | 图标 | ✅ 已完成 |
+| ITEM_Ch3_004 | ITEM_Symbol_Eternal | 永恒之符 | 图标 | ✅ 已完成 |
 
 ## 6. 资产复用指南 (Asset Reuse Guide)
 
@@ -132,40 +132,42 @@
 
 ### 6.1 可复用资产来源
 
-项目的 `feature/art-ui` 分支已完成第一章部分核心资产的制作，这些资产质量优秀，可直接复用或作为创作新资产的基准。
+项目的 `feature/art-ui-v2` 分支已完成前三章全部核心资产的制作。这些资源质量极高，是后续所有美术工作的“黄金标准”。
 
-- **位置**: `feature/art-ui` 分支下的 `Content/Art/Chapter1/` 目录。
-- **状态**: 第一章约50%的核心资产已完成，特别是所有物品栏图标（Icons）均已制作完毕。
+- **位置**: `feature/art-ui-v2` 分支下的 `Content/Art/` 目录。
+- **状态**: 全部139个核心资产均已完成并通过验收，覆盖了场景、道具、图标、角色和动画序列。
 
 ### 6.2 复用策略
 
 1.  **直接复用 (Direct Reuse)**:
-    - **第一章物品栏图标**: 全部7个图标已完成，可直接用于游戏。
-    - **第一章部分道具**: 如放大镜、天平、乌鸦、日记本等静态道具可直接使用。
+    - **所有图标**: 三个章节的全部物品栏图标（Icons/Items）均已完成，可直接用于游戏。
+    - **所有动画序列**: 包括木乃伊复活、四种植物的生长动画，均已完成且序列完整。
+    - **所有场景**: 均已分层制作，可直接用于构建游戏场景。
 
 2.  **作为基准状态 (Use as Base State)**:
-    - 对于需要多状态的道具，已有的资产可作为“状态1”或“基准帧”。
-    - **示例**: 使用已有的 `Prop_Ch1_MusicBox_Closed.png` 作为参考图，生成其“打开”状态，确保尺寸、光照、风格完全一致。
+    - 对于未来可能需要扩展的动画（如时钟指针转动、人偶移动），当前已有的静态资源可作为“基准帧”。
+    - **示例**: 使用已有的 `CHAR_RedPuppet_Idle.png` 作为参考图，生成其行走或交互的动画帧，以确保风格完全一致。
 
 3.  **作为风格参考 (Use as Style Reference)**:
-    - 所有在 `feature/art-ui` 分支中的资产都应被视为后续所有章节资产创作的“黄金标准”。
-    - 在为第二、三章创作新资产时，务必参考第一章的资产，以确保色调、质感、光影和轮廓风格的统一。
-    - **示例**: 在创作第二章的“现在之符”时，应使用第一章的 `Icon_Ch1_PastSymbol.png` 作为风格和结构参考。
+    - `feature/art-ui-v2` 分支中的所有资产都应被视为后续任何新增资产创作的“绝对标准”。
+    - 在为后续章节或DLC创作新资产时，务必参考这批已有资产，以确保色调、质感、光影和轮廓风格的统一。
+    - **示例**: 创作新道具时，应参考 `OBJ_Gear_Gold.png` 的光影处理和 `ITEM_Crown_Icon.png` 的线条质感。
 
 ## 7. 工作流程与交付标准
 
-1.  **检查与复用**: 在领取任务前，首先对照第6节的“资产复用指南”，确认该资产是否已有可复用的版本或基准。
-2.  **领取任务**: 从 `Docs/ART_ASSETS_LIST.md` 中按优先级（P0 > P1 > P2）领取资产制作任务。
+1.  **检查与复用**: 在领取任务前，首先对照第5节的“资产清单”，确认该资产是否已有可复用的版本。
+2.  **领取任务**: 从项目管理工具（如Jira, Trello）中按优先级领取新资产制作任务。
 3.  **分析需求**: 仔细阅读设计文档，理解资源将被用于何种场景和交互。
 4.  **生成与创作**: 遵循第3节的“核心生成方法论”，使用AI工具生成基础素材，并结合手动绘制进行精修。
-5.  **格式与命名**: 所有资产需保存为带透明背景的 `.png` 格式。严格按照 `{类型}_{章节}_{逻辑名称}_{状态}.png` (例如 `OBJ_Ch1_MusicBox_Open.png`) 的规范进行命名。
-6.  **提交资源**: 将最终的资源文件放置在 `Content/` 目录下对应的文件夹中（如 `Content/Textures/Chapter1/Objects/`）。
-7.  **发起PR**: 将新创建的资源文件和更新的文档通过Git提交到你的 `feature/art-ui-v2` 分支，并发起Pull Request至 `develop` 分支。
+5.  **格式与命名**: 所有资产需保存为带透明背景的 `.png` 格式。严格按照 `{类型}_{章节/逻辑名}_{具体描述}_{状态/序号}.png` 的规范进行命名。例如 `OBJ_Ch1_MusicBox_Open.png` 或 `PLANT_Sunflower_01_Seed.png`。
+6.  **提交资源**: 将最终的资源文件放置在 `Content/Art/` 目录下对应的章节和类别文件夹中（如 `Content/Art/Chapter1/Props/`）。
+7.  **发起PR**: 将新创建的资源文件通过Git提交到新的 `feature` 分支，并发起Pull Request至 `develop` 分支进行审核。
 
 ## 8. 质量标准 (Quality Standards)
 
 - **一致性**: 所有资源必须在风格、光照、透视上保持高度一致。
 - **清晰度**: 即使是图标，也应保证在不同尺寸下都具有良好的可读性。
 - **优化**: 纹理尺寸应遵循2的幂次方原则（如 512x512, 1024x1024），并根据资源的重要性和使用场景选择合适的尺寸，以优化性能。
+- **动画帧命名**: 对于存在多个变体的同一帧（如画作的不同状态），建议使用后缀进行区分，例如 `PAINT_Repin_03_Future_Blank.png` 和 `PAINT_Repin_03_Future_Starry.png`，而不是创建重复的帧序号。
 
 请开始你的创作，为这个神秘的锈湖世界注入生命。
