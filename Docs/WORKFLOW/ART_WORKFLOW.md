@@ -1,76 +1,164 @@
 # 美术工作流程指南 (Art Workflow)
 
 **目标角色**: 美术资源 Manus 对话
-**核心工具**: NanoBananaPro (图像生成)
+**核心工具**: NanoBananaPro (图像生成), Sola (动画生成)
+**最后更新**: 2025-12-09
 
 ---
 
 ## 1. 你的使命 (Your Mission)
 
-你的核心使命是为《锈湖：炼金术士的天体仪》项目创作所有必要的2D美术资源。你将使用 **NanoBananaPro** 工具，严格遵循项目的艺术风格，生成高质量的UI元素、环境背景、道具图标和纹理贴图。
+你的核心使命是为《锈湖：炼金术士的天体仪》项目创作所有必要的2D及3D美术资源。你将使用 **NanoBananaPro** 工具生成高质量的静态图像（UI元素、环境背景、道具图标、纹理贴图），并使用 **Sola** 工具辅助生成过场动画。所有创作都必须严格遵循项目的艺术风格，并按照本指南中定义的清单、规范和流程进行。
 
 ## 2. 艺术风格指南 (Art Style Guide)
 
-你必须严格遵循 **“锈湖” (Rusty Lake)** 系列的标志性艺术风格。关键元素包括：
+你必须严格遵循 **“锈湖” (Rusty Lake)** 系列的标志性艺术风格。在开始创作前，请务必研究《锈湖》系列游戏（如《Rusty Lake Hotel》、《Cube Escape》系列）的截图和艺术设定。关键元素包括：
 
-- **色调**: 以暗沉、低饱和度的颜色为主，如深棕、灰、黑、铁锈色。使用血红、湖蓝、暗金作为点缀色来突出关键元素。
-- **质感**: 强烈的版画和手绘质感。线条不要求绝对平滑，可以有自然的瑕疵和粗糙感。
-- **主题**: 维多利亚时代的复古感、超现实主义、怪诞的动植物组合、炼金术符号、机械装置。
-- **光影**: 光影对比强烈，常用聚光灯效果来突出场景中的关键区域，大面积的暗部是常态。
-- **参考**: 在开始创作前，请务必研究《锈湖》系列游戏（如《Rusty Lake Hotel》、《Cube Escape》系列）的截图和艺术设定。
+| 风格要素 | 详细描述 |
+| :--- | :--- |
+| **色调方案** | **主色调**：以暗沉、低饱和度的颜色为主，如深棕、灰黑、铁锈色、米黄和幽蓝。<br>**强调色**：谨慎使用血红、湖蓝、暗金作为点缀，用以突出关键交互元素或象征性物品。 |
+| **质感与线条** | 追求强烈的**手绘版画质感**。线条不要求绝对平滑，应带有自然的瑕疵和粗糙感，模拟铜版画或钢笔画的效果。避免使用过于平滑的矢量线条。 |
+| **光影处理** | 光影对比强烈，常用**聚光灯效果**来突出场景中的关键区域，营造舞台感。大面积的暗部是常态，用以塑造神秘和压抑的氛围。 |
+| **核心主题** | 维多利亚时代的复古感、超现实主义、怪诞的动植物组合（如动物头人身）、炼金术符号、神秘的机械装置。 |
+| **角色设计** | 角色多为**动物拟人化**形象（乌鸦、鹿、兔子等），身着维多利亚时代服饰。造型线条简洁，面部表情简化，更多通过姿态和环境来叙事。 |
+| **环境氛围** | 场景中充满丰富的细节，如墙壁的剥落、金属的锈蚀、纸张的做旧感。通过漂浮的尘埃、光束、雾气等大气效果增强沉浸感。 |
 
-## 3. 资产需求清单 (Asset Request List)
+## 3. 完整美术资产清单 (Master Asset List)
 
-你需要根据以下清单，按优先级顺序生成资源。所有资源都必须符合 [编码规范文档](../CODING_STANDARDS.md) 中定义的命名和格式要求。
+这是项目所需全部美术资产的详细清单。请严格按照清单中的命名、类型和描述进行制作。所有纹理尺寸应遵循2的幂次方原则（如 512x512, 1024x1024）。
 
-### 3.1 UI 资源 (UI Assets)
+### 3.1 开场序列 (Opening Sequence)
 
-| 资产名称 | 描述 | 风格提示 | 存放路径 |
+| 资源名称 | 类型 | 描述 | 尺寸/规格 |
 | :--- | :--- | :--- | :--- |
-| `T_Icon_Hand` | 交互指针：手形图标 | 复古、略带骨感的手 | `Content/Textures/UI/Icons/` |
-| `T_Icon_Eye` | 观察指针：眼睛图标 | 风格化的眼睛，类似锈湖logo | `Content/Textures/UI/Icons/` |
-| `T_UI_Frame_01` | 通用UI边框 | 带有维多利亚时期花纹的金属或木质边框 | `Content/Textures/UI/Frames/` |
-| `T_Button_Normal` | 按钮普通状态 | 做旧的木板或金属片 | `Content/Textures/UI/Buttons/` |
-| `T_Button_Hover` | 按钮悬停状态 | 带有微弱发光的版本 | `Content/Textures/UI/Buttons/` |
-| `T_Inventory_Slot` | 背包格子 | 一个方形的、略有磨损的凹槽 | `Content/Textures/UI/Inventory/` |
+| `T_Logo_Game` | 纹理 | 游戏Logo（中英文） | 1024x512 PNG |
+| `BG_Laboratory` | 背景 | 炼金术士实验室场景 | 1920x1080 PNG |
+| `BG_Museum_Exterior` | 背景 | 博物馆外观建筑 | 1920x1080 PNG |
+| `ANIM_Door_Open` | 动画 | 博物馆大门打开 | 3秒序列帧 |
+| `BG_Corridor` | 背景 | 博物馆走廊 | 1920x1080 PNG |
+| `SM_Orrery_Real` | 3D模型 | 实物天体仪3D模型 | <5000面 FBX |
 
-### 3.2 道具与物品资源 (Props & Items)
+### 3.2 第一章：博物馆第一展厅
 
-这些是玩家可以在游戏中拾取或交互的物品。你需要为每件物品生成一个2D图标和一个用于场景中的纹理（如果需要）。
-
-| 资产名称 (图标) | 描述 | 风格提示 | 存放路径 |
+| 资源名称 | 类型 | 描述 | 尺寸/规格 |
 | :--- | :--- | :--- | :--- |
-| `T_Item_Key_01` | 一把生锈的黄铜钥匙 | 维多利亚风格，形状奇特 | `Content/Textures/Items/` |
-| `T_Item_Gear_Small` | 小齿轮 | 黄铜材质，有磨损 | `Content/Textures/Items/` |
-| `T_Item_Slide_01` | 玻璃幻灯片 | 玻璃片上印有模糊的草原风景 | `Content/Textures/Items/` |
-| `T_Item_Gem_Red` | 红色宝石（心脏） | 未经打磨，形状不规则 | `Content/Textures/Items/` |
-| `T_Item_Feather` | 一根乌鸦羽毛 | 黑色，略带光泽 | `Content/Textures/Items/` |
+| `BG_Chapter1_Hall` | 背景 | 第一展厅完整背景 | 1920x1080 PNG |
+| `SM_Display_Case_Cartier` | 3D模型 | 卡地亚展柜 | <3000面 FBX |
+| `T_Item_Ring` | 物品图标 | 卡地亚戒指 | 100x100 PNG |
+| `T_Item_Necklace` | 物品图标 | 卡地亚项链 | 100x100 PNG |
+| `T_Item_Crown` | 物品图标 | 卡地亚王冠 | 100x100 PNG |
+| `SM_Sarcophagus` | 3D模型 | 埃及石棺 | <4000面 FBX |
+| `SM_Scale_Egyptian` | 3D模型 | 埃及天平 | <2000面 FBX |
+| `T_Item_TruthFeather` | 物品图标 | 真理之羽 | 100x100 PNG |
+| `SM_MusicBox` | 3D模型 | 音乐盒 | <3000面 FBX |
+| `T_Item_NoteFeather` | 物品图标 | 音符羽毛 | 100x100 PNG |
+| `T_Item_PastSymbol` | 物品图标 | 过去之符（羽毛形） | 100x100 PNG |
 
-### 3.3 环境纹理 (Environment Textures)
+### 3.3 第二章：博物馆第二展厅
 
-这些是用于构建游戏场景的平铺纹理。
-
-| 资产名称 | 描述 | 风格提示 | 存放路径 |
+| 资源名称 | 类型 | 描述 | 尺寸/规格 |
 | :--- | :--- | :--- | :--- |
-| `T_Wall_Wood_D` | 木墙壁纸 | 带有维多利亚花纹的深色剥落壁纸 | `Content/Textures/Environment/` |
-| `T_Floor_Tile_D` | 地板瓷砖 | 黑白相间的棋盘格瓷砖，有裂纹和污渍 | `Content/Textures/Environment/` |
-| `T_Metal_Rusty_D` | 生锈金属 | 用于管道、齿轮等 | `Content/Textures/Environment/` |
+| `BG_Chapter2_Hall` | 背景 | 第二展厅完整背景 | 1920x1080 PNG |
+| `ANIM_Plant_Grow` | 动画 | 四种植物生长动画 | 5帧序列 |
+| `T_Item_Seed` | 物品图标 | 种子 | 100x100 PNG |
+| `SM_Mirror_Large` | 3D模型 | 大型立式镜子 | <2000面 FBX |
+| `SM_Puppet_Red` | 3D模型 | 红色人偶 | <1500面 FBX |
+| `SM_Puppet_Blue` | 3D模型 | 蓝色人偶 | <1500面 FBX |
+| `T_Item_ButterflyRed` | 物品图标 | 红色蝴蝶标本 | 100x100 PNG |
+| `T_Item_Net` | 物品图标 | 捕蝶网 | 100x100 PNG |
+| `T_Item_PresentSymbol` | 物品图标 | 现在之符（交织花形） | 100x100 PNG |
+
+### 3.4 第三章：博物馆核心大厅
+
+| 资源名称 | 类型 | 描述 | 尺寸/规格 |
+| :--- | :--- | :--- | :--- |
+| `BG_Chapter3_CoreHall` | 背景 | 核心大厅完整背景 | 2560x1080 PNG |
+| `SM_Orrery_Core` | 3D模型 | 天体仪核心装置 | <5000面 FBX |
+| `SM_Clock_Large` | 3D模型 | 大钟 | <3000面 FBX |
+| `T_Item_GearCopper` | 物品图标 | 铜色齿轮 | 100x100 PNG |
+| `SM_Easel` | 3D模型 | 空白画架 | <1500面 FBX |
+| `T_Item_Brush` | 物品图标 | 画家的画笔 | 100x100 PNG |
+| `SM_ClawMachine` | 3D模型 | 娃娃机 | <4000面 FBX |
+| `T_Item_Coin` | 物品图标 | 游戏币 | 100x100 PNG |
+| `T_Item_FutureSymbol` | 物品图标 | 未来之符（彩虹画笔形） | 100x100 PNG |
+| `T_Item_EternalSymbol` | 物品图标 | 永恒之符（三符融合） | 100x100 PNG |
+
+### 3.5 结局序列 (Ending Sequence)
+
+| 资源名称 | 类型 | 描述 | 尺寸/规格 |
+| :--- | :--- | :--- | :--- |
+| `VFX_Firework` | 特效 | 烟花粒子 | 粒子系统 |
+| `ANIM_Orrery_Ascend` | 动画 | 天体仪升华动画 | 10秒序列帧 |
+| `VFX_Wall_Dissolve` | 特效 | 墙壁消失特效 | Shader |
+| `T_Photo_Real_01` | 纹理 | 真实照片1 | 1024x1024 PNG |
+| `BG_EndMenu` | 背景 | 结束菜单背景 | 1920x1080 PNG |
+
+### 3.6 通用UI资产 (Common UI Assets)
+
+| 资源名称 | 类型 | 描述 | 尺寸/规格 |
+| :--- | :--- | :--- | :--- |
+| `T_Icon_Eye` | 图标 | 观察图标（眼睛） | 64x64 PNG |
+| `T_Icon_Hand` | 图标 | 交互图标（手） | 64x64 PNG |
+| `T_Icon_Inventory` | 图标 | 背包图标（皮包） | 80x80 PNG |
+| `T_BG_Parchment` | 纹理 | 羊皮纸纹理（可平铺） | 512x512 PNG |
+| `T_Button_Normal` | 纹理 | 按钮默认状态 | 400x80 PNG |
+| `T_DialogueBox_BG` | 纹理 | 对话框背景 | 1728x240 PNG |
+
+> **注意**：这只是一个摘要列表。完整的资产清单（约350+项，包含音效、特效、字体等）已存放在 `/home/ubuntu/art_assets_master_list.md`，请在开始工作前详细阅读该文件。
 
 ## 4. 工作流程 (Workflow)
 
-1.  **接收任务**: 从项目指导或技术规划Manus对话处接收具体的美术资源需求。
-2.  **分析需求**: 仔细阅读 [交互设计文档](../INTERACTION_DESIGN.md) 和 [C++模块说明](../MODULES.md)，理解资源将被用于何种场景和交互。
-3.  **生成图像**: 使用 **NanoBananaPro** 工具，根据风格指南和具体需求生成图像。
-    - **提示词 (Prompt) 示例**: `a rusty key in the style of Rusty Lake, victorian era, detailed illustration, dark background, single object, game asset icon`
-4.  **格式转换与命名**: 将生成的图像处理成项目所需的格式（如 `.png`, `.tga`），并严格按照命名规范进行命名。
-5.  **提交资源**: 将最终的资源文件放置在 `Content/` 目录下对应的文件夹中。
-6.  **更新文档**: 如果你创建了一系列新的同类资源，请在相关文档中进行记录。
-7.  **发起提交**: 将新创建的资源文件和更新的文档通过Git提交到你的 `feature` 分支，并发起Pull Request。
+1.  **接收任务**: 从项目指导或技术规划Manus对话处接收具体的美术资源需求，明确当前阶段的制作重点。
+2.  **查阅清单**: 在 `art_assets_master_list.md` 中找到对应资源的详细规格，包括名称、尺寸、格式和风格描述。
+3.  **分析需求**: 仔细阅读相关设计文档（如 `Chapter1_Design_Optimized.md`），理解资源将被用于何种场景和交互，以确保创作符合叙事和功能要求。
+4.  **生成图像/动画**: 
+    - **静态资源**: 使用 **NanoBananaPro** 工具，根据风格指南和具体需求生成图像。  
+      *提示词 (Prompt) 示例*: `a rusty key in the style of Rusty Lake, victorian era, detailed illustration, dark background, single object, game asset icon, on a white background`
+    - **动画资源**: 使用 **Sola** 工具生成过场动画的视频素材，或使用其他工具制作序列帧动画。
+5.  **格式转换与命名**: 将生成的资源处理成项目所需的格式（如 `.png`, `.fbx`），并严格按照命名规范（见下文）进行命名。
+6.  **提交资源**: 将最终的资源文件放置在 `Content/` 目录下对应的文件夹中（见下文文件结构）。
+7.  **发起提交**: 将新创建的资源文件通过Git提交到你的 `feature` 分支，并发起Pull Request。在PR描述中清晰说明本次提交包含的资产内容。
 
-## 5. 质量标准 (Quality Standards)
+## 5. 命名规范与文件结构
 
-- **一致性**: 所有资源必须在风格上保持高度一致。
-- **清晰度**: 即使是图标，也应保证在不同尺寸下都具有良好的可读性。
-- **优化**: 纹理尺寸应遵循2的幂次方原则（如 512x512, 1024x1024），并根据资源的重要性和使用场景选择合适的尺寸，以优化性能。
+### 5.1 命名前缀
+
+所有资源必须使用标准前缀以方便引擎识别和管理：
+
+- **T_**: 纹理 (Texture)
+- **M_**: 材质 (Material)
+- **SM_**: 静态网格 (Static Mesh)
+- **SFX_**: 音效 (Sound Effect)
+- **BGM_**: 背景音乐 (Background Music)
+- **VO_**: 配音 (Voice Over)
+- **Anim_**: 动画 (Animation)
+- **VFX_**: 视觉特效 (Visual Effects)
+- **BG_**: 静态背景 (Background)
+- **CUTSCENE_**: 过场动画 (Cutscene)
+
+### 5.2 文件存放路径
+
+请将资源存放在 `Content/` 目录下的对应子文件夹中：
+
+```
+Content/
+├── Textures/ (T_)
+│   ├── UI/
+│   ├── Items/
+│   └── Environment/
+├── StaticMeshes/ (SM_)
+│   ├── Props/
+│   └── Environment/
+├── Sounds/ (SFX_, BGM_, VO_)
+├── Animations/ (Anim_)
+└── Cutscenes/ (CUTSCENE_)
+```
+
+## 6. 质量标准 (Quality Standards)
+
+- **一致性**: 所有资源必须在艺术风格、色调和质感上保持高度一致。
+- **清晰度**: 即使是小图标，也应保证在不同尺寸下都具有良好的可读性。
+- **优化**: 纹理尺寸遵循2的幂次方原则，并根据资源的重要性和使用场景选择合适的尺寸，以优化性能。3D模型面数需控制在清单要求的范围内。
+- **叙事性**: 每个美术元素都服务于游戏的核心叙事。在创作时，思考“这个物品在锈湖的世界里会是什么样子？它背后有什么故事？”
 
 请开始你的创作，为这个神秘的锈湖世界注入生命。
